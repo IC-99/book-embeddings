@@ -51,7 +51,6 @@ def perm(root):
 def isolate(root, x):
     pass
 
-
 tree1 = PQtreeNode('Q', [PQtreeNode(1),
                          PQtreeNode(3),
                          PQtreeNode('P', [PQtreeNode(2), PQtreeNode(4)]),
@@ -69,10 +68,8 @@ tree3 = PQtreeNode('P', [PQtreeNode('A'),
                          PQtreeNode('B'),
                          PQtreeNode('Q', [PQtreeNode('C'), PQtreeNode('D'), PQtreeNode('E')])])
 
-
 #print(get_yield(tree1))
 #print(get_yield(tree2))
-
 
 print(perm(tree2))
 print(perm(tree1))
