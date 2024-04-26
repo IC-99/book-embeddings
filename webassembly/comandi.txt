@@ -1,0 +1,3 @@
+emcc hello.c -o hello.js
+
+python -m http.server
