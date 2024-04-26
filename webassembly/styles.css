@@ -1,0 +1,11 @@
+h1 {
+	text-align: center;
+}
+
+#network {
+  width: 400px; /* Larghezza del 100% del contenitore genitore */
+  height: 800px; /* Altezza fissa per il contenitore del grafo */
+  margin: auto;
+  width: 50%;
+  border: 3px solid black;
+}
