@@ -7,11 +7,22 @@ fetch('graph.json')
 
         const nodes = new vis.DataSet();
         
-        const edges = new vis.DataSet(graph.edges);
+        const edges = new vis.DataSet();
 
-        graph["order"].forEach(id => {
-            const node = graph.nodes.find(node => node.id === id);
-            nodes.add({ id: node.id, label: node.label, level: 0 });
+        const mapping = new Map()
+
+        i = 0
+        graph["order"].forEach(label => {
+            mapping.set(label, i)
+            i += 1
+        });
+
+        graph["nodes"].forEach(node => {
+            nodes.add({ id: mapping.get(node.id), label: node.label, level: 0 });
+        });
+
+        graph["edges"].forEach(edge => {
+            edges.add({ from: mapping.get(edge.from), to: mapping.get(edge.to) });
         });
 
         // Definisci le opzioni del grafo
