@@ -2,7 +2,6 @@
 #include <time.h>
 #include <stdlib.h>
 
-
 int main() {
     printf("Hello, WebAssembly!\n");
     srand(time(NULL));   // Initialization, should only be called once.
