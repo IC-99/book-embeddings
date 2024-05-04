@@ -1,4 +1,4 @@
-h1 {
+h1, h2 {
 	text-align: center;
 }
 
@@ -8,4 +8,24 @@ h1 {
   margin: auto;
   width: 50%;
   border: 3px solid black;
+}
+
+#sortable {
+  text-align: center;
+  list-style-type: none;
+  margin: auto;
+  padding: 8px;
+  display: flex; /* Disposizione orizzontale */
+  flex-direction: row; /* Direzione orizzontale */
+  justify-content: center; /* Centra gli elementi lungo l'asse principale (orizzontalmente) */
+  align-items: center; /* Centra gli elementi lungo l'asse trasversale (verticalmente) */
+}
+
+/* Stile per ogni elemento della lista */
+#sortable li {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 8px;
+  margin-right: 4px; /* Margine tra gli elementi */
+  cursor: move;
 }
