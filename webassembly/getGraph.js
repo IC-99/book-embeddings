@@ -1,8 +1,6 @@
 fetch('graph.json')
     .then(response => response.json())
     .then(graph => {
-        // Ora puoi accedere alle informazioni del grafo
-        // Crea un nuovo oggetto DataSet con i dati del grafo
         const sortableList = document.getElementById('sortable');
 
         // Genera la lista ordinata a partire dai nodi del grafo
