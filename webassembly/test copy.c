@@ -27,6 +27,11 @@ typedef struct Stack {
     int capacity;
 } Stack;
 
+typedef struct BiConnectedComponent {
+    int* edges;
+    int size;
+} BiConnectedComponent;
+
 AdjListNode* newAdjListNode(int dest) {
     AdjListNode* newNode = (AdjListNode*)malloc(sizeof(AdjListNode));
     newNode->dest = dest;
@@ -47,7 +52,6 @@ Graph* createGraph(int V) {
 }
 
 void addEdge(Graph* graph, int src, int dest) {
-    // Aggiungi un arco da src a dest
     AdjListNode* newNode = newAdjListNode(dest);
     newNode->next = graph->array[src].head;
     graph->array[src].head = newNode;
@@ -56,21 +60,6 @@ void addEdge(Graph* graph, int src, int dest) {
 void addUndirectedEdge(Graph* graph, int src, int dest) {
     addEdge(graph, src, dest);
     addEdge(graph, dest, src);
-}
-
-void printGraph(Graph* graph) {
-    for (int v = 0; v < graph->V; ++v) {
-        AdjListNode* listNode = graph->array[v].head;
-        printf("Lista di adiacenza del vertice %d: [", v);
-        while (listNode) {
-            printf("%d", listNode->dest);
-            if (listNode->next) {
-                printf(", ");
-            }
-            listNode = listNode->next;
-        }
-        printf("]\n");
-    }
 }
 
 Stack* createStack(int capacity) {
@@ -95,7 +84,7 @@ int pop(Stack* stack) {
     return stack->array[stack->top--];
 }
 
-void findBCCUtil(Graph* graph, int u, int disc[], int low[], Stack* stack, int parent[], int* currentTime) {
+void findBCCUtil(Graph* graph, int u, int disc[], int low[], Stack* stack, int parent[], BiConnectedComponent* bcc, int* currentTime) {
     disc[u] = low[u] = ++(*currentTime);
     int children = 0;
     AdjListNode* pCrawl = graph->array[u].head;
@@ -106,17 +95,22 @@ void findBCCUtil(Graph* graph, int u, int disc[], int low[], Stack* stack, int p
             children++;
             parent[v] = u;
             push(stack, u * graph->V + v);
-            findBCCUtil(graph, v, disc, low, stack, parent, currentTime);
+            findBCCUtil(graph, v, disc, low, stack, parent, bcc, currentTime);
 
             low[u] = (low[u] < low[v]) ? low[u] : low[v];
 
             if ((parent[u] == -1 && children > 1) || (parent[u] != -1 && low[v] >= disc[u])) {
-                while (stack->array[stack->top] != u * graph->V + v) {
+                BiConnectedComponent component;
+                component.edges = (int*)malloc(stack->capacity * sizeof(int));
+                component.size = 0;
+
+                while (1) {
                     int edge = pop(stack);
-                    printf("(%d -- %d) ", edge / graph->V, edge % graph->V);
+                    component.edges[component.size++] = edge;
+                    if (edge == u * graph->V + v) break;
                 }
-                int edge = pop(stack);
-                printf("(%d -- %d)\n", edge / graph->V, edge % graph->V);
+                
+                bcc[(*currentTime) - 1] = component;
             }
         } else if (v != parent[u] && disc[v] < disc[u]) {
             low[u] = (low[u] < disc[v]) ? low[u] : disc[v];
@@ -127,11 +121,10 @@ void findBCCUtil(Graph* graph, int u, int disc[], int low[], Stack* stack, int p
     }
 }
 
-
-void findBCC(Graph* graph) {
+BiConnectedComponent* findBCC(Graph* graph, int* numBCC) {
     if (graph == NULL || graph->V <= 0) {
         printf("Grafo non valido.\n");
-        return;
+        return NULL;
     }
 
     int *disc = (int*)malloc(graph->V * sizeof(int));
@@ -140,7 +133,7 @@ void findBCC(Graph* graph) {
 
     if (disc == NULL || low == NULL || parent == NULL) {
         printf("Errore di allocazione di memoria.\n");
-        return;
+        return NULL;
     }
 
     Stack* stack = createStack(graph->V * graph->V);
@@ -149,7 +142,20 @@ void findBCC(Graph* graph) {
         free(disc);
         free(low);
         free(parent);
-        return;
+        return NULL;
+    }
+
+    *numBCC = 0;
+    BiConnectedComponent* bcc = (BiConnectedComponent*)malloc(graph->V * sizeof(BiConnectedComponent));
+
+    if (bcc == NULL) {
+        printf("Errore di allocazione di memoria per le componenti biconnesse.\n");
+        free(disc);
+        free(low);
+        free(parent);
+        free(stack->array);
+        free(stack);
+        return NULL;
     }
 
     for (int i = 0; i < graph->V; i++) {
@@ -162,7 +168,8 @@ void findBCC(Graph* graph) {
 
     for (int i = 0; i < graph->V; i++) {
         if (disc[i] == -1) {
-            findBCCUtil(graph, i, disc, low, stack, parent, &currentTime);
+            findBCCUtil(graph, i, disc, low, stack, parent, bcc, &currentTime);
+            (*numBCC)++;
         }
     }
 
@@ -171,55 +178,51 @@ void findBCC(Graph* graph) {
     free(parent);
     free(stack->array);
     free(stack);
+
+    return bcc;
 }
 
-
 int main() {
-    int V = 12;
-    Graph* dag = createGraph(V);
-    Graph* graph = createGraph(V);
-
-    addEdge(dag, 0, 1);
-    addEdge(dag, 0, 5);
-    addEdge(dag, 1, 2);
-    addEdge(dag, 3, 4);
-    addEdge(dag, 4, 1);
-    addEdge(dag, 4, 10);
-    addEdge(dag, 4, 11);
-    addEdge(dag, 5, 3);
-    addEdge(dag, 5, 4);
-    addEdge(dag, 6, 5);
-    addEdge(dag, 7, 5);
-    addEdge(dag, 7, 6);
-    addEdge(dag, 7, 8);
-    addEdge(dag, 8, 6);
-    addEdge(dag, 9, 1);
-    addEdge(dag, 9, 2);
-    addEdge(dag, 10, 11);
-
+    Graph* graph = createGraph(5);
     addUndirectedEdge(graph, 0, 1);
-    addUndirectedEdge(graph, 0, 5);
+    addUndirectedEdge(graph, 0, 2);
     addUndirectedEdge(graph, 1, 2);
+    addUndirectedEdge(graph, 1, 3);
     addUndirectedEdge(graph, 3, 4);
-    addUndirectedEdge(graph, 4, 1);
-    addUndirectedEdge(graph, 4, 10);
-    addUndirectedEdge(graph, 4, 11);
-    addUndirectedEdge(graph, 5, 3);
-    addUndirectedEdge(graph, 5, 4);
-    addUndirectedEdge(graph, 6, 5);
-    addUndirectedEdge(graph, 7, 5);
-    addUndirectedEdge(graph, 7, 6);
-    addUndirectedEdge(graph, 7, 8);
-    addUndirectedEdge(graph, 8, 6);
-    addUndirectedEdge(graph, 9, 1);
-    addUndirectedEdge(graph, 9, 2);
-    addUndirectedEdge(graph, 10, 11);
 
-    printGraph(dag);
+    int numBCC = 0;
+    BiConnectedComponent* bcc = findBCC(graph, &numBCC);
 
-    printf("Componenti biconnesse nel grafo dato:\n");
+    printf("Numero di componenti biconnesse: %d\n", numBCC);
 
-    findBCC(graph);
+    for (int i = 0; i < numBCC; i++) {
+        printf("Componente biconnessa %d: [", i+1);
+        for (int j = 0; j < bcc[i].size; j++) {
+            printf("(%d -- %d)", bcc[i].nodes[j].u, bcc[i].nodes[j].v);
+            if (j < bcc[i].size - 1) {
+                printf(", ");
+            }
+        }
+        printf("]\n");
+    }
+
+    // Libera la memoria delle componenti biconnesse
+    for (int i = 0; i < numBCC; i++) {
+        free(bcc[i].nodes);
+    }
+    free(bcc);
+
+    // Libera la memoria del grafo
+    for (int v = 0; v < graph->V; v++) {
+        AdjListNode* curr = graph->array[v].head;
+        while (curr != NULL) {
+            AdjListNode* temp = curr;
+            curr = curr->next;
+            free(temp);
+        }
+    }
+    free(graph->array);
+    free(graph);
 
     return 0;
 }
