@@ -22,20 +22,21 @@ Edge::Edge(int u, int v)
 class Graph {
 	int V; // No. of vertices
 	int E; // No. of edges
-    int count;
+	vector<int> cutpoints;
 	vector<vector<bool>> B;
 	list<int>* adj; // A dynamic array of adjacency lists
 
 	// A Recursive DFS based function used by BCC()
-	void BCCUtil(int u, int disc[], int low[],
-				list<Edge>* st, int parent[]);
+	void BCCUtil(int u, int disc[], int low[], list<Edge>* st, int parent[]);
 
 public:
 	Graph(int V); // Constructor
 	void addEdge(int v, int w); // function to add an edge to graph
 	void addUndirectedEdge(int v, int w);
 	void BCC(); // prints strongly connected components
+	int getV();
     int getCount();
+	vector<int> getCutpoints();
 	vector<vector<bool>> getComponents();
 };
 
@@ -43,7 +44,6 @@ Graph::Graph(int V)
 {
 	this->V = V;
 	this->E = 0;
-    this->count = 0;
 	this->B = {};
 	adj = new list<int>[V];
 }
@@ -60,9 +60,14 @@ void Graph::addUndirectedEdge(int v, int w)
 	addEdge(w, v);
 }
 
-int Graph::getCount()
+int Graph::getV()
 {
-    return count;
+    return V;
+}
+
+vector<int> Graph::getCutpoints()
+{
+    return cutpoints;
 }
 
 vector<vector<bool>> Graph::getComponents()
@@ -110,6 +115,7 @@ void Graph::BCCUtil(int u, int disc[], int low[], list<Edge>* st,
 			// If u is an articulation point, pop all edges from stack till u -- v
 			if ((disc[u] == 1 && children > 1) || (disc[u] > 1 && low[v] >= disc[u])) {
 				cout << "cutpoint: " << u << endl;
+				cutpoints.push_back(u);
 				vector<bool> row(V, false);
 				while (st->back().u != u || st->back().v != v) {
 					Edge edge = st->back();
@@ -125,7 +131,6 @@ void Graph::BCCUtil(int u, int disc[], int low[], list<Edge>* st,
 				st->pop_back();
 				cout << endl;
 				B.push_back(row);
-				count++;
 			}
 		}
 
@@ -157,7 +162,7 @@ void Graph::BCC()
 	}
 
 	vector<bool> row(V, false);
-
+	
 	for (int i = 0; i < V; i++) {
 		if (disc[i] == NIL)
 			BCCUtil(i, disc, low, st, parent);
@@ -176,11 +181,8 @@ void Graph::BCC()
 		}
 		if (j == 1) {
 			cout << endl;
-			count++;
+			B.push_back(row);
 		}
-	}
-	if (j == 1){
-		B.push_back(row);
 	}
 }
 
@@ -226,15 +228,30 @@ int main()
 	g.addUndirectedEdge(10, 11);
 
 	g.BCC();
-	cout << "Above are " << g.getCount() << " biconnected components in graph" << endl;
 
 	vector<vector<bool>> B = g.getComponents();
-	for (int i = 0; i < g.getCount(); i++) {
+	vector<int> cutpoints = g.getCutpoints();
+
+	cout << "Above are " << B.size() << " biconnected components in graph" << endl;
+
+	for (int i = 0; i < B.size(); i++) {
 		cout << "component B_" << i << ": [";
-		for (int j = 0; j < 12; j++) {
-			cout << B[i][j] << " ";
+		for (int j = 0; j < g.getV(); j++) {
+			cout << B[i][j];
+			if (j < g.getV() - 1) {
+				cout << ", ";
+			}
 		}
 		cout << "]" << endl;
 	}
+
+	cout << "cutpoints: [";
+	for (int i = 0; i < cutpoints.size(); i++) {
+		cout << cutpoints[i];
+		if (i < cutpoints.size() - 1) {
+			cout << ", ";
+		}
+	}
+	cout << "]" << endl;
 	return 0;
 }
