@@ -1,5 +1,6 @@
 // A C++ program to find biconnected components in a given undirected graph
 #include <iostream>
+#include <fstream>
 #include <list>
 #include <stack>
 #include <vector>
@@ -18,7 +19,7 @@ Edge::Edge(int u, int v)
 	this->v = v;
 }
 
-// A class that represents an directed graph
+// A class that represents an undirected graph
 class Graph {
 	int V; // No. of vertices
 	int E; // No. of edges
@@ -31,8 +32,7 @@ class Graph {
 
 public:
 	Graph(int V); // Constructor
-	void addEdge(int v, int w); // function to add an edge to graph
-	void addUndirectedEdge(int v, int w);
+	void addEdge(int u, int v); // function to add an edge to graph
 	void BCC(); // prints strongly connected components
 	int getV();
     int getCount();
@@ -48,16 +48,11 @@ Graph::Graph(int V)
 	adj = new list<int>[V];
 }
 
-void Graph::addEdge(int v, int w)
+void Graph::addEdge(int u, int v)
 {
-	adj[v].push_back(w);
+	adj[u].push_back(v);
+	adj[v].push_back(u);
 	E++;
-}
-
-void Graph::addUndirectedEdge(int v, int w)
-{
-	addEdge(v, w);
-	addEdge(w, v);
 }
 
 int Graph::getV()
@@ -152,7 +147,7 @@ void Graph::BCC()
 	int* disc = new int[V];
 	int* low = new int[V];
 	int* parent = new int[V];
-	list<Edge>* st = new list<Edge>[E];
+	list<Edge>* stack = new list<Edge>[E];
 
 	// Initialize disc and low, and parent arrays
 	for (int i = 0; i < V; i++) {
@@ -165,18 +160,18 @@ void Graph::BCC()
 	
 	for (int i = 0; i < V; i++) {
 		if (disc[i] == NIL)
-			BCCUtil(i, disc, low, st, parent);
+			BCCUtil(i, disc, low, stack, parent);
 
 		int j = 0;
 		// If stack is not empty, pop all edges from stack
-		if (!st->empty()) {
-			while (st->size() > 0) {
-				Edge edge = st->back();
+		if (!stack->empty()) {
+			while (stack->size() > 0) {
+				Edge edge = stack->back();
 				row[edge.u] = true;
 				row[edge.v] = true;
 				j = 1;
 				cout << edge.u << "--" << edge.v << " ";
-				st->pop_back();
+				stack->pop_back();
 			}
 		}
 		if (j == 1) {
@@ -186,10 +181,58 @@ void Graph::BCC()
 	}
 }
 
+class Dag {
+	int V;
+	int E;
+	list<int>* adj;
+
+public:
+	Dag(int V);
+	void addEdge(int u, int v);
+	Graph getGraph();
+	void printDag();
+};
+
+Dag::Dag(int V)
+{
+	this->V = V;
+	adj = new list<int>[V];
+}
+
+void Dag::addEdge(int u, int v)
+{
+	adj[u].push_back(v);
+	E++;
+}
+
+void Dag::printDag()
+{
+	cout << "DAG:" << endl;
+	for (int u = 0; u < V; ++u) {
+        cout << u << ":";
+        for (int adjVertex : adj[u]) {
+            cout << " " << adjVertex;
+        }
+        cout << endl;
+    }
+	cout << endl;
+}
+
+Graph Dag::getGraph()
+{
+	Graph g = Graph(V);
+	for (int u = 0; u < V; ++u) {
+        for (int v : adj[u]) {
+            g.addEdge(u, v);
+        }
+    }
+	return g;
+}
+
 // Driver program to test above function
 int main()
 {
-	Graph dag(12);
+	Dag dag(12);
 	dag.addEdge(0, 1);
 	dag.addEdge(0, 5);
 	dag.addEdge(1, 2);
@@ -208,24 +251,9 @@ int main()
 	dag.addEdge(9, 2);
 	dag.addEdge(10, 11);
 
-	Graph g(12);
-	g.addUndirectedEdge(0, 1);
-	g.addUndirectedEdge(0, 5);
-	g.addUndirectedEdge(1, 2);
-	g.addUndirectedEdge(3, 4);
-	g.addUndirectedEdge(4, 1);
-	g.addUndirectedEdge(4, 10);
-	g.addUndirectedEdge(4, 11);
-	g.addUndirectedEdge(5, 3);
-	g.addUndirectedEdge(5, 4);
-	g.addUndirectedEdge(6, 5);
-	g.addUndirectedEdge(7, 5);
-	g.addUndirectedEdge(7, 6);
-	g.addUndirectedEdge(7, 8);
-	g.addUndirectedEdge(8, 6);
-	g.addUndirectedEdge(9, 1);
-	g.addUndirectedEdge(9, 2);
-	g.addUndirectedEdge(10, 11);
+	dag.printDag();
+
+	Graph g = dag.getGraph();
 
 	g.BCC();
 
