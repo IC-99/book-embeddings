@@ -3,7 +3,9 @@
 #include <fstream>
 #include <list>
 #include <stack>
+#include <queue>
 #include <vector>
+#include <memory>
 //#include <jsoncpp/json/json.h>
 #define NIL -1
 using namespace std;
@@ -20,12 +22,60 @@ Edge::Edge(int u, int v)
 	this->v = v;
 }
 
+class TreeNode {
+	int val;
+	bool isComponent;
+	vector<shared_ptr<TreeNode>> children;
+
+public:
+	TreeNode(int val, bool isComponent);
+	int getVal();
+	void addChild(shared_ptr<TreeNode> child);
+	void printSubTree();
+};
+
+TreeNode::TreeNode(int val, bool isComponent)
+{
+	this->val = val;
+	this->isComponent = isComponent;
+	this->children = {};
+}
+
+int TreeNode::getVal()
+{
+	return val;
+}
+
+void TreeNode::addChild(shared_ptr<TreeNode> child)
+{
+	children.push_back(child);
+}
+
+void TreeNode::printSubTree()
+{
+	if (isComponent) {
+		cout << "B_";
+	}
+	else {
+		cout << "C_";
+	}
+	cout << val << " ha " << children.size() << " figli: ";
+	for (shared_ptr<TreeNode> child : children) {
+		cout << child->val << " ";
+	}
+	cout << endl;
+	for (shared_ptr<TreeNode> child : children) {
+		child->printSubTree();
+	}
+}
+
 // A class that represents an undirected graph
 class Graph {
 	int V; // No. of vertices
 	int E; // No. of edges
 	vector<int> cutpoints;
 	vector<vector<bool>> B;
+	vector<int> B_order;
 	list<int>* adj; // A dynamic array of adjacency lists
 
 	// A Recursive DFS based function used by BCC()
@@ -34,11 +84,9 @@ class Graph {
 public:
 	Graph(int V); // Constructor
 	void addEdge(int u, int v); // function to add an edge to graph
-	void BCC(); // prints strongly connected components
-	int getV();
-    int getCount();
-	vector<int> getCutpoints();
-	vector<vector<bool>> getComponents();
+	void BCC(); // initialize this->B and this->cutpoints
+	void printStats();
+	shared_ptr<TreeNode> getBlockCutpointTree(int rootIndex);
 };
 
 Graph::Graph(int V)
@@ -46,6 +94,7 @@ Graph::Graph(int V)
 	this->V = V;
 	this->E = 0;
 	this->B = {};
+	this->B_order = {};
 	adj = new list<int>[V];
 }
 
@@ -56,19 +105,29 @@ void Graph::addEdge(int u, int v)
 	E++;
 }
 
-int Graph::getV()
+void Graph::printStats()
 {
-    return V;
-}
+	cout << "Above are " << B.size() << " biconnected components in graph" << endl;
 
-vector<int> Graph::getCutpoints()
-{
-    return cutpoints;
-}
+	for (int i = 0; i < B.size(); i++) {
+		cout << "component B_" << i << ": [";
+		for (int j = 0; j < V; j++) {
+			cout << B[i][j];
+			if (j < V - 1) {
+				cout << ", ";
+			}
+		}
+		cout << "]" << endl;
+	}
 
-vector<vector<bool>> Graph::getComponents()
-{
-    return B;
+	cout << "cutpoints: [";
+	for (int i = 0; i < cutpoints.size(); i++) {
+		cout << cutpoints[i];
+		if (i < cutpoints.size() - 1) {
+			cout << ", ";
+		}
+	}
+	cout << "]" << endl;
 }
 
 // A recursive function that finds and prints strongly connected
@@ -182,6 +241,56 @@ void Graph::BCC()
 	}
 }
 
+shared_ptr<TreeNode> Graph::getBlockCutpointTree(int rootIndex)
+{
+	vector<bool> visitedC(cutpoints.size(), false);
+	vector<bool> visitedB(B.size(), false);
+	B_order = {};
+
+	auto rootNode = make_shared<TreeNode>(rootIndex, true);
+
+	queue<shared_ptr<TreeNode>> queueB;
+	queueB.push(rootNode);
+	queue<shared_ptr<TreeNode>> queueC;
+
+	while (!queueB.empty()) {
+		auto currentBNode = queueB.front();
+		queueB.pop();
+		int currentBIndex = currentBNode->getVal();
+		
+		visitedB[currentBIndex] = true;
+		B_order.push_back(currentBIndex);
+
+		for (int i = 0; i < cutpoints.size(); i++) {
+			if (!visitedC[i]) {
+				if (B[currentBIndex][cutpoints[i]]) {
+					auto child = make_shared<TreeNode>(i, false);
+					currentBNode->addChild(child);
+					queueC.push(child);
+				}
+			}
+		}
+		while (!queueC.empty()) {
+			auto currentCNode = queueC.front();
+			queueC.pop();
+			int currentCIndex = currentCNode->getVal();
+
+			visitedC[currentCIndex] = true;
+
+			for (int i = 0; i < B.size(); i++) {
+				if (!visitedB[i]) {
+					if (B[i][cutpoints[currentCIndex]]) {
+						auto child = make_shared<TreeNode>(i, true);
+						currentCNode->addChild(child);
+						queueB.push(child);
+					}
+				}
+			}
+		}
+	}
+	return rootNode;
+}
+
 class Dag {
 	int V;
 	int E;
@@ -258,29 +367,10 @@ int main()
 
 	g.BCC();
 
-	vector<vector<bool>> B = g.getComponents();
-	vector<int> cutpoints = g.getCutpoints();
+	g.printStats();
 
-	cout << "Above are " << B.size() << " biconnected components in graph" << endl;
+	auto T = g.getBlockCutpointTree(1);
+	T->printSubTree();
 
-	for (int i = 0; i < B.size(); i++) {
-		cout << "component B_" << i << ": [";
-		for (int j = 0; j < g.getV(); j++) {
-			cout << B[i][j];
-			if (j < g.getV() - 1) {
-				cout << ", ";
-			}
-		}
-		cout << "]" << endl;
-	}
-
-	cout << "cutpoints: [";
-	for (int i = 0; i < cutpoints.size(); i++) {
-		cout << cutpoints[i];
-		if (i < cutpoints.size() - 1) {
-			cout << ", ";
-		}
-	}
-	cout << "]" << endl;
 	return 0;
 }
