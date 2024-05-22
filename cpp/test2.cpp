@@ -61,7 +61,8 @@ void TreeNode::printSubTree()
 	}
 	cout << val << " ha " << children.size() << " figli: ";
 	for (shared_ptr<TreeNode> child : children) {
-		cout << child->val << " ";
+
+		cout << (child->isComponent ? "B_" : "C_") << child->val << " ";
 	}
 	cout << endl;
 	for (shared_ptr<TreeNode> child : children) {
