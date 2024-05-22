@@ -87,6 +87,7 @@ public:
 	void addEdge(int u, int v); // function to add an edge to graph
 	void BCC(); // initialize this->B and this->cutpoints
 	void printStats();
+	vector<vector<bool>> getComponents();
 	shared_ptr<TreeNode> getBlockCutpointTree(int rootIndex);
 };
 
@@ -131,6 +132,11 @@ void Graph::printStats()
 	cout << "]" << endl;
 }
 
+vector<vector<bool>> Graph::getComponents()
+{
+	return B;
+}
+
 // A recursive function that finds and prints strongly connected
 // components using DFS traversal
 // u --> The vertex to be visited next
@@ -139,8 +145,7 @@ void Graph::printStats()
 // discovery time) that can be reached from subtree
 // rooted with current vertex
 // *st -- >> To store visited edges
-void Graph::BCCUtil(int u, int disc[], int low[], list<Edge>* st,
-					int parent[])
+void Graph::BCCUtil(int u, int disc[], int low[], list<Edge>* st, int parent[])
 {
 	// A static variable is used for simplicity, we can avoid use
 	// of static variable by passing a pointer.
@@ -297,11 +302,16 @@ class Dag {
 	int E;
 	list<int>* adj;
 
+	list<int> findHamiltonianPathHelper(vector<bool> component, int start, int target, list<int> path);
+
 public:
 	Dag(int V);
 	void addEdge(int u, int v);
 	Graph getGraph();
 	void printDag();
+	int findComponentSource(vector<bool> component);
+	int findComponentSink(vector<bool> component);
+	list<int> findHamiltonianPath(vector<bool> component);
 };
 
 Dag::Dag(int V)
@@ -340,6 +350,74 @@ Graph Dag::getGraph()
 	return g;
 }
 
+int Dag::findComponentSource(vector<bool> component)
+{
+	for (int u = 0; u < V; ++u) {
+		if (component[u]) {
+			for (int v: adj[u]) {
+				component[v] = false;
+			}
+		}
+	}
+	for (int u = 0; u < V; ++u) {
+		if (component[u]) {
+			return u;
+		}
+	}
+	return -1;
+}
+
+int Dag::findComponentSink(vector<bool> component)
+{
+	for (int u = 0; u < V; ++u) {
+		bool isSink = true;
+		if (component[u]) {
+			for (int v: adj[u]) {
+				if (component[v]) {
+					isSink = false;
+					break;
+				}
+			}
+			if (isSink) {
+				return u;
+			}
+		}
+	}
+	return -1;
+}
+
+list<int> Dag::findHamiltonianPathHelper(vector<bool> component, int start, int target, list<int> path)
+{
+	component[start] = false;
+	if (start == target) {
+		for (int i = 0; i < component.size(); i++) {
+			if (component[i]) {
+				return {};
+			}
+		}
+		return {start};
+	}
+	for (int neighbor : adj[start]) {
+		if (component[neighbor]) {
+			list<int> newPath = path;
+			list<int> result = findHamiltonianPathHelper(component, neighbor, target, path);
+			if (!result.empty()) {
+				result.push_front(start);
+				return result;
+			}
+		}
+	}
+	return {};
+}
+
+list<int> Dag::findHamiltonianPath(vector<bool> component)
+{
+	int start = findComponentSource(component);
+	int target = findComponentSink(component);
+	list<int> path = findHamiltonianPathHelper(component, start, target, {});
+	return path;
+}
+
 // Driver program to test above function
 int main()
 {
@@ -370,8 +448,21 @@ int main()
 
 	g.printStats();
 
+	cout << endl;
+
 	auto T = g.getBlockCutpointTree(1);
 	T->printSubTree();
 
+	cout << endl;
+	vector<vector<bool>> components = g.getComponents();
+	for (int i = 0; i < components.size(); i++) {
+		list<int> path = dag.findHamiltonianPath(components[i]);
+		cout << "component B_" << i << " has hamiltonian path: ";
+		for (int num : path) {
+			cout << num << " ";
+		}
+		cout << endl;
+	}
+	
 	return 0;
 }
