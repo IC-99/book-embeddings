@@ -1,4 +1,3 @@
-// A C++ program to find biconnected components in a given undirected graph
 #include <iostream>
 #include <fstream>
 #include <list>
@@ -6,7 +5,7 @@
 #include <queue>
 #include <vector>
 #include <memory>
-//#include <jsoncpp/json/json.h>
+
 #define NIL -1
 using namespace std;
 
@@ -16,6 +15,7 @@ public:
 	int v;
 	Edge(int u, int v);
 };
+
 Edge::Edge(int u, int v)
 {
 	this->u = u;
@@ -83,12 +83,13 @@ class Graph {
 	void BCCUtil(int u, int disc[], int low[], list<Edge>* st, int parent[]);
 
 public:
-	Graph(int V); // Constructor
-	void addEdge(int u, int v); // function to add an edge to graph
+	Graph(int V);
+	void addEdge(int u, int v);
 	void BCC(); // initialize this->B and this->cutpoints
 	void printStats();
 	vector<vector<bool>> getComponents();
 	shared_ptr<TreeNode> getBlockCutpointTree(int rootIndex);
+	vector<int> getComponentsOrder();
 };
 
 Graph::Graph(int V)
@@ -297,6 +298,11 @@ shared_ptr<TreeNode> Graph::getBlockCutpointTree(int rootIndex)
 	return rootNode;
 }
 
+vector<int> Graph::getComponentsOrder()
+{
+	return B_order;
+}
+
 class Dag {
 	int V;
 	int E;
@@ -418,7 +424,6 @@ list<int> Dag::findHamiltonianPath(vector<bool> component)
 	return path;
 }
 
-// Driver program to test above function
 int main()
 {
 	Dag dag(12);
@@ -455,8 +460,9 @@ int main()
 
 	cout << endl;
 	vector<vector<bool>> components = g.getComponents();
-	for (int i = 0; i < components.size(); i++) {
-		list<int> path = dag.findHamiltonianPath(components[i]);
+	vector<int> componentsOrder = g.getComponentsOrder();
+	for (int i = 0; i < componentsOrder.size(); i++) {
+		list<int> path = dag.findHamiltonianPath(components[componentsOrder[i]]);
 		cout << "component B_" << i << " has hamiltonian path: ";
 		for (int num : path) {
 			cout << num << " ";
