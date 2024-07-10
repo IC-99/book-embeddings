@@ -14,5 +14,3 @@ g++ -o binary -L/home/ivan/OGDF file.o -lOGDF -lCOIN -lgcov || { echo "Link fall
 
 # Esegue il binario
 ./binary || { echo "Esecuzione fallita"; exit 1; }
-
-echo "Script eseguito con successo"

@@ -175,7 +175,7 @@ void find1StackLayout(Graph* G) {
 
 	// verifica se ogni componente ha una sola sorgente e un solo pozzo
 	for(int i = 0; i < numberOfBiconnectedComponents; i++) {
-		draw(&biconnectedComponentsGraphs[i], "Component" + to_string(i) + ".svg" );
+		//draw(&biconnectedComponentsGraphs[i], "Component" + to_string(i) + ".svg" );
 
 		if (!hasOneSourceAndOneSink(&biconnectedComponentsGraphs[i])) {
 			std::cout << "la componente biconnessa " << i << " non ha una sola sorgente e un solo pozzo" << std::endl;
@@ -190,19 +190,30 @@ void find1StackLayout(Graph* G) {
 	// FASE 2 da scrivere
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+	std::cout << "Argomenti main: ";
+	int i = 1;
+	while(i < argc - 1) {
+		std::cout << argv[i] << ", ";
+		i++;
+	}
+	if (i < argc) std::cout << argv[i] << std::endl;
+	else std::cout << "nessun argomento" << std::endl;
+
 	Graph G;
 	Graph GNotOuterplanar;
 	Graph GWithMoreSourcesAndSinks;
 
-	readGraph(&G, "graph");
-	readGraph(&GNotOuterplanar, "graphNotOuterplanar");
-	readGraph(&GWithMoreSourcesAndSinks, "graphWithMoreSourcesAndSinks");
+	//readGraph(&G, "graph");
+	//readGraph(&GNotOuterplanar, "graphNotOuterplanar");
+	//readGraph(&GWithMoreSourcesAndSinks, "graphWithMoreSourcesAndSinks");
 
-	draw(&G, "Graph.svg");
+	populateGraph(&G);
 
-	find1StackLayout(&GWithMoreSourcesAndSinks);
+	//draw(&G, "Graph.svg");
+
+	find1StackLayout(&G);
 
 	/*
 	NodeArray<int> nodeArray = NodeArray<int>(G);
