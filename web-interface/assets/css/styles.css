@@ -1,0 +1,98 @@
+/* Barra di navigazione */
+nav {
+  background-color: #08175a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+nav ul {
+  list-style-type: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  padding: 14px 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+nav ul li a:hover {
+  background-color: white;
+  color: black;
+}
+
+nav h1 {
+  color: white;
+  padding: 1%;
+  margin: 0;
+}
+
+h1, h2 {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1%;
+}
+
+#buttons {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+#buttons button {
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+#buttons input {
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+
+#buttons button:hover {
+  cursor: pointer;
+}
+
+#network {
+  width: 1000px; /* Larghezza del 100% del contenitore genitore */
+  height: 800px; /* Altezza fissa per il contenitore del grafo */
+  border: 3px solid black;
+  margin-right: 10%;
+}
+
+#sortable {
+  text-align: center;
+  list-style-type: none;
+  margin: auto;
+  padding: 8px;
+  display: flex; /* Disposizione orizzontale */
+  flex-direction: row; /* Direzione orizzontale */
+  justify-content: center; /* Centra gli elementi lungo l'asse principale (orizzontalmente) */
+  align-items: center; /* Centra gli elementi lungo l'asse trasversale (verticalmente) */
+}
+
+/* Stile per ogni elemento della lista */
+#sortable li {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 8px;
+  margin-right: 4px;
+  cursor: move;
+}

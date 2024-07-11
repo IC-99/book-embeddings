@@ -8,8 +8,16 @@
 #include <ogdf/energybased/FMMMLayout.h>
 #include <iostream>
 #include <unordered_map>
+#include <sstream>
+#include <string>
+#include <vector>
 
 using namespace ogdf;
+
+bool readGraphFromString(ogdf::Graph& G, const std::string& graphString) {
+    std::istringstream iss(graphString);  // Create a stringstream from graphString
+    return ogdf::GraphIO::read(G, iss);   // Use the read function that takes std::istream&
+}
 
 void draw(Graph* G, string fileName)
 {
@@ -190,16 +198,45 @@ void find1StackLayout(Graph* G) {
 	// FASE 2 da scrivere
 }
 
-int main(int argc, char *argv[])
+void readGraphFromArg(Graph* G, const char* graphString)
 {
-	std::cout << "Argomenti main: ";
-	int i = 1;
-	while(i < argc - 1) {
-		std::cout << argv[i] << ", ";
+	std::unordered_map<int, node> nodes;
+	int i = 0;
+	string current = "";
+	bool readingNodes = true;
+	int sourceNode = -1;
+
+	while (graphString[i] != '\0') {
+		if (graphString[i] == '\n') {
+			int index = std::stoi(current);
+			if (readingNodes) {
+			    nodes[index] = G->newNode(index);
+			}
+			else {
+				G->newEdge(nodes[sourceNode], nodes[index]);
+			}
+			current = "";
+		}
+		else if (graphString[i] == ',') {
+			sourceNode = std::stoi(current);
+			current = "";
+			readingNodes = false;
+		}
+		else {
+			current = current + graphString[i];
+		}
 		i++;
 	}
-	if (i < argc) std::cout << argv[i] << std::endl;
-	else std::cout << "nessun argomento" << std::endl;
+}
+
+int main(int argc, char* argv[])
+{
+	if (argc > 1) {
+        std::cout << "Input string: " << argv[1] << std::endl;
+    }
+	else {
+		std::cout << "Input string: nessun argomento" << std::endl;
+	}
 
 	Graph G;
 	Graph GNotOuterplanar;
@@ -209,9 +246,16 @@ int main(int argc, char *argv[])
 	//readGraph(&GNotOuterplanar, "graphNotOuterplanar");
 	//readGraph(&GWithMoreSourcesAndSinks, "graphWithMoreSourcesAndSinks");
 
-	populateGraph(&G);
+	//populateGraph(&G);
+
+	//const char* graphString = "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n0,1\n0,5\n1,2\n3,4\n4,1\n4,10\n4,11\n5,3\n5,4\n6,5\n7,5\n7,6\n7,8\n8,6\n9,1\n9,2\n10,11\n\0";
+	
+	readGraphFromArg(&G, argv[1]);
 
 	//draw(&G, "Graph.svg");
+	//saveGraph(&G, "graphSmall");
+
+	std::cout << "RISULTATO: 1 7 8 9 6 4 5 2 3 10" << std::endl; 
 
 	find1StackLayout(&G);
 

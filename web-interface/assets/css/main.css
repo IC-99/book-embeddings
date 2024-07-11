@@ -1,0 +1,179 @@
+@import url(https://fonts.googleapis.com/css?family=Poppins:200,400);
+
+.list {
+    flex-grow: 1;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+h1 {
+    font-family: "Poppins", sans-serif;
+    font-size: 2em;
+    font-weight: 600;
+    text-align: center;
+}
+
+.filter {
+    text-align: center;
+}
+
+.filter select {
+    margin: 5px;
+}
+
+.filter button {
+    margin: 5px;
+}
+
+#filter-reset-button {
+    margin-left: 50px;
+}
+
+h2 {
+    font-family: "Poppins", sans-serif;
+    font-size: 1em;
+    font-weight: 400;
+}
+
+@media only screen and (max-width: 600px) {
+    .list-container  {
+        max-width: 100%;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .list-container {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 70%;
+    }
+}
+
+.list-element {
+    flex: 33%;
+    flex-basis: 1;
+    border-radius: 20px;
+    -webkit-box-shadow: 3px 1px 29px 0px #bfbfbf;
+    -moz-box-shadow: 3px 1px 29px 0px #bfbfbf;
+    box-shadow: 3px 1px 29px 0px #bfbfbf;
+    height: fit-content;
+    margin: 10px;
+}
+
+.list-element-title {
+    margin-inline: 10px;
+    margin-bottom: -15px;
+}
+
+.list-element-info {
+    margin-inline: 10px;
+}
+
+.list-element-author {
+    font-family: "Poppins", sans-serif;
+    font-size: 0.8em;
+    font-weight: 400;
+}
+
+.list-element-arrangement{
+    font-family: "Poppins", sans-serif;
+    font-size: 0.6em;
+    background-color: rgb(80, 255, 118);
+    margin-inline: 5px;
+    padding: 2px;
+    border-radius: 10px;
+    font-weight: 400;
+}
+
+
+.list-element-primary-genre{
+    font-family: "Poppins", sans-serif;
+    font-size: 0.6em;
+    background-color: rgb(0, 255, 255);
+    margin-inline: 5px;
+    padding: 2px;
+    border-radius: 10px;
+    font-weight: 400;
+}
+
+.list-element-secondary-genre{
+    font-family: "Poppins", sans-serif;
+    font-size: 0.6em;
+    background-color: rgb(255, 147, 58);
+    margin-inline: 5px;
+    padding: 2px;
+    border-radius: 10px;
+    font-weight: 400;
+}
+
+.list-element-mood{
+    font-family: "Poppins", sans-serif;
+    font-size: 0.6em;
+    background-color: rgb(172, 120, 255);
+    margin-inline: 5px;
+    padding: 2px;
+    border-radius: 10px;
+    font-weight: 400;
+}
+
+.list-element-technical-info {
+    margin-inline: 10px;
+}
+
+.list-element-technical-BPM {
+    font-family: "Poppins", sans-serif;
+    font-size: 0.7em;
+    margin-right: 5px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.list-element-technical-BPM-value {
+    font-family: "Poppins", sans-serif;
+    font-size: 0.7em;
+    margin-right: 5px;
+    border-radius: 10px;
+    font-weight: 400;
+}
+
+.list-element-audio-player {
+    margin-inline: 10px;
+}
+
+.list-element-contact {
+    margin-inline: 10px;
+}
+
+.list-element-contact-email {
+    font-family: "Poppins", sans-serif;
+    font-size: 0.7em;
+    border-radius: 10px;
+    background-color: rgb(235, 235, 235);
+    padding: 2px;
+    font-weight: 400;
+    float: right;
+}
+
+.button-icon {
+    margin-inline: 20px;
+    margin-top: 20px;
+    height: 25px;
+    width: 25px;
+}
+
+#button-download {
+    height: 25px;
+    width: 25px;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 50%;
+}
+
+#button-download:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+#button-download:active {
+    background: rgba(0, 0, 0, 0.2);
+}
+
