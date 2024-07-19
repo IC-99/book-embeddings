@@ -231,33 +231,54 @@ void readGraphFromArg(Graph* G, const char* graphString)
 
 int main(int argc, char* argv[])
 {
+
+	Graph G;
+
+	// test per comunicazione con js
+	std::cout << "RISULTATO: 1 7 8 9 6 4 5 2 3 10" << std::endl; 
+
 	if (argc > 1) {
         std::cout << "Input string: " << argv[1] << std::endl;
+		readGraphFromArg(&G, argv[1]);
+		find1StackLayout(&G);
     }
 	else {
 		std::cout << "Input string: nessun argomento" << std::endl;
+		std::cout << std::endl;
+
+		Graph GNotOuterplanar;
+		Graph GWithMoreSourcesAndSinks;
+		
+		string graphName1 = "graph";
+		string graphName2 = "graphNotOuterplanar";
+		string graphName3 = "graphWithMoreSourcesAndSinks";
+
+		readGraph(&G, graphName1);
+		readGraph(&GNotOuterplanar, graphName2);
+		readGraph(&GWithMoreSourcesAndSinks, graphName3);
+
+		//draw(&G, "Graph.svg");
+		//draw(&GNotOuterplanar, "GraphNotOuterplanar.svg");
+		//draw(&GWithMoreSourcesAndSinks, "GraphWithMoreSourcesAndSinks.svg");
+
+		std::cout << "### esecuzione con grafo: " << graphName1 << " ###" << std::endl;
+		find1StackLayout(&G);
+		std::cout << std::endl;
+
+		std::cout << "### esecuzione con grafo: " << graphName2 << " ###" << std::endl;
+		find1StackLayout(&GNotOuterplanar);
+		std::cout << std::endl;
+
+		std::cout << "### esecuzione con grafo: " << graphName3 << " ###" << std::endl;
+		find1StackLayout(&GWithMoreSourcesAndSinks);
+		std::cout << std::endl;
 	}
-
-	Graph G;
-	Graph GNotOuterplanar;
-	Graph GWithMoreSourcesAndSinks;
-
-	//readGraph(&G, "graph");
-	//readGraph(&GNotOuterplanar, "graphNotOuterplanar");
-	//readGraph(&GWithMoreSourcesAndSinks, "graphWithMoreSourcesAndSinks");
 
 	//populateGraph(&G);
 
-	//const char* graphString = "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n0,1\n0,5\n1,2\n3,4\n4,1\n4,10\n4,11\n5,3\n5,4\n6,5\n7,5\n7,6\n7,8\n8,6\n9,1\n9,2\n10,11\n\0";
-	
-	readGraphFromArg(&G, argv[1]);
-
 	//draw(&G, "Graph.svg");
-	//saveGraph(&G, "graphSmall");
-
-	std::cout << "RISULTATO: 1 7 8 9 6 4 5 2 3 10" << std::endl; 
-
-	find1StackLayout(&G);
+	//saveGraph(&G, "graph")
+	
 
 	/*
 	NodeArray<int> nodeArray = NodeArray<int>(G);
