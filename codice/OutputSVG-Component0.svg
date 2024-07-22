@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" version="1.1" baseProfile="full" viewBox="13 13 58 58">
+	<g>
+		<g>
+			<polygon points="40.5 29.5 43.8146 31.4887 42.4887 32.8146 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M62,51 L40.5,29.5" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="54.5 53.0625 51.1328 54.9608 50.6356 53.1529 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M22,62 L54.5,53.0625" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="30.9375 29.5 30.8471 33.3644 29.0392 32.8672 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M22,62 L30.9375,29.5" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+	</g>
+	<g>
+		<ellipse cx="62" cy="51" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="62" y="51" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">1</text>
+	</g>
+	<g>
+		<ellipse cx="33" cy="22" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="33" y="22" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">2</text>
+	</g>
+	<g>
+		<ellipse cx="22" cy="62" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="22" y="62" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">9</text>
+	</g>
+</svg>

@@ -1,22 +1,105 @@
-fetch('https://ivancarlini.bitbucket.io/articles/book-embedding/assets/json/graph.json')
-    .then(response => response.json())
-    .then(graph => {
-        // Intercetta i messaggi di log per ottenere l'ordine calcolato
-        const originalConsoleLog = console.log;
-        let order = [];
+function fileToString() {
+    return new Promise((resolve, reject) => {
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput.files.length === 0) {
+            reject('Choose a file');
+            return;
+        }
 
-        console.log = function(message) {
-            originalConsoleLog.apply(console, arguments);
-            // Cerca il messaggio che contiene l'ordine (adatta questa parte alla tua specifica formattazione)
-            if (typeof message === 'string' && message.startsWith('RISULTATO: ')) {
-                order = message.replace('RISULTATO: ', '').split(' ').map(item => item.trim());
-                console.log = originalConsoleLog; // Ripristina console.log
-                // Genera il grafo con l'ordine estratto
-                generateGraph(graph, order);
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function() {
+            try {
+                const fileString = reader.result; // Contenuto del file come stringa
+                resolve(fileString); // Risolve la Promise con la stringa JSON
+            } catch (error) {
+                reject('Error reading file: ' + error);
             }
         };
-    })
-    .catch(error => console.error('Errore:', error));
+
+        reader.onerror = function() {
+            reject('Error reading file: ' + reader.error);
+        };
+
+        reader.readAsText(file);
+    });
+}
+
+function getGraphFromFileString(fileString) {
+	G = {
+        nodes: [],
+        edges: []
+    };
+
+	var i = 0;
+	var current = "";
+	var readingNodes = true;
+	var sourceNode = -1;
+
+	while (i < fileString.length) {
+		if (fileString[i] == '\n') {
+			if (readingNodes) {
+			    G.nodes.push({id: current, label: current});
+			}
+			else {
+                G.edges.push({from: sourceNode, to: current});
+			}
+			current = "";
+		}
+		else if (fileString[i] == ',') {
+			sourceNode = current;
+			current = "";
+			readingNodes = false;
+		}
+		else {
+			current = current + fileString[i];
+		}
+		i++;
+	}
+    if (current.length > 0) {
+		if (readingNodes) {
+			G.nodes.push({id: current, label: current});
+		}
+		else {
+			G.edges.push({from: sourceNode, to: current});
+		}
+	}
+    return G;
+}
+
+function getOrderAndDraw(graph) {
+    // Intercetta i messaggi di log per ottenere l'ordine calcolato
+    const originalConsoleLog = console.log;
+    let order = [];
+
+    console.log = function(message) {
+        originalConsoleLog.apply(console, arguments);
+        // Cerca il messaggio che contiene l'ordine (adatta questa parte alla tua specifica formattazione)
+        if (typeof message === 'string' && message.startsWith('RISULTATO: ')) {
+            order = message.replace('RISULTATO: ', '').split(' ').map(item => item.trim());
+            console.log = originalConsoleLog; // Ripristina console.log
+            // Genera il grafo con l'ordine estratto
+            order.pop(); // rimuove l'elemento vuoto dovuto allo ' ' finale
+            generateGraph(graph, order);
+        }
+    };
+}
+
+// Aggiungi l'event listener solo dopo che il documento è stato caricato completamente
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('run').addEventListener('click', function() {
+        fileToString()
+            .then(fileString => {
+                const graph = getGraphFromFileString(fileString);
+                getOrderAndDraw(graph);
+            })
+            .catch(error => {
+                // Gestisci gli errori qui
+                console.error('Errore durante la lettura del file:', error);
+            });
+    });
+})
 
 // Funzione per inizializzare il drag and drop
 function initDragAndDrop(graph) {
@@ -57,13 +140,19 @@ function generateGraph(graph, order) {
 
     // Definisci le opzioni del grafo
     const options = {
+        nodes: {
+            color: "#76e0f5",
+            font: {
+                color: "black"
+            }
+        },
         layout: {
             hierarchical: {
                 direction: 'UD' // Direzione del layout (da sinistra a destra)
             }
         },
         edges: {
-            color: "#000000",
+            color: "black",
             arrows: {
                 to: true // Indica che gli archi sono diretti verso il nodo di arrivo
             },
