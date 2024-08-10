@@ -52,7 +52,7 @@ function getGraphFromFileString(fileString) {
 			current = "";
 			readingNodes = false;
 		}
-		else {
+        else if (fileString[i] != '\r') {
 			current = current + fileString[i];
 		}
 		i++;
@@ -65,6 +65,7 @@ function getGraphFromFileString(fileString) {
 			G.edges.push({from: sourceNode, to: current});
 		}
 	}
+    //console.log(G);
     return G;
 }
 
