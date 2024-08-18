@@ -22,7 +22,7 @@ class TreeNode
 		int value;
 		bool isCutpoint;
 		std::vector<TreeNode*> neighbors;
-		std::vector<TreeNode*> children;
+		std::unordered_map<int, std::vector<std::vector<TreeNode*>>> children;
 
 		TreeNode(int idOfTreeNode, int val, bool cutpoint) {
 			id = idOfTreeNode;
@@ -40,35 +40,123 @@ class TreeNode
 			neighbors.push_back(neighbor);
 		}
 
-		void addChild(TreeNode* child) {
-			children.push_back(child);
+		void addChild(int treeId, TreeNode* child, int childrenType) {
+			if (children.find(treeId) == children.end()) {
+				std::vector<std::vector<TreeNode*>> newTree(3);
+				children[treeId] = newTree;
+			}
+			children[treeId][childrenType].push_back(child);
 		}
+
+		std::vector<TreeNode*> getChildren(int treeId, int childrenType) {
+			if (children.find(treeId) == children.end()) {
+				std::vector<std::vector<TreeNode*>> newTree(3);
+				children[treeId] = newTree;
+				return std::vector<TreeNode*>();
+			}
+			if (children.size() == 0) {
+				return std::vector<TreeNode*>();
+			}
+			return children[treeId][childrenType];
+		}
+
 };
 
-int getParentCutpoint(TreeNode* treeNode, int component) {
+void printBCT(TreeNode* treeNode, int treeId) {
 	if (treeNode->children.size() == 0) {
-		return -1;
+		return;
 	}
 	if (treeNode->isCutpoint) {
-		for(TreeNode* componentNode: treeNode->children) {
-			if (componentNode->value == component) {
-				return treeNode->value;
+		std::cout << "figli del cutpoint " << treeNode->value << ":" << std::endl;
+		for (int childrenType = 0; childrenType < 3; childrenType++) {
+			std::cout << "  " << childrenType << ": " ;
+			for(TreeNode* componentNode: treeNode->getChildren(treeId, childrenType)) {
+				std::cout << componentNode->value << " ";
 			}
-			int result = getParentCutpoint(componentNode, component);
-			if (result != -1) {
-				return result;
+			std::cout << std::endl;
+		}
+		for (int childrenType = 0; childrenType < 3; childrenType++) {
+			for(TreeNode* componentNode: treeNode->getChildren(treeId, childrenType)) {
+				printBCT(componentNode, treeId);	
 			}
 		}
 	}
 	else {
-		for(TreeNode* cutpointNode: treeNode->children) {
-			int result = getParentCutpoint(cutpointNode, component);
-			if (result != -1) {
-				return result;
+		std::cout << "figli della componente " << treeNode->value << ":" << std::endl;
+		for (int childrenType = 0; childrenType < 3; childrenType++) {
+			std::cout << "  " << childrenType << ": " ;
+			for(TreeNode* cutpointNode: treeNode->getChildren(treeId, childrenType)) {
+				std::cout << cutpointNode->value << " ";
+			}
+			std::cout << std::endl;	
+		}
+		for (int childrenType = 0; childrenType < 3; childrenType++) {
+			for(TreeNode* cutpointNode: treeNode->getChildren(treeId, childrenType)) {
+				printBCT(cutpointNode, treeId);
+			}
+		}
+	}
+	return;
+}
+
+int getParentCutpoint(TreeNode* treeNode, int component, int treeId) {
+	if (treeNode->children.size() == 0) {
+		return -1;
+	}
+	if (treeNode->isCutpoint) {
+		for (int childrenType = 0; childrenType < 3; childrenType++) {
+			for(TreeNode* componentNode: treeNode->getChildren(treeId, childrenType)) {
+				if (componentNode->value == component) {
+					return treeNode->value;
+				}
+				int result = getParentCutpoint(componentNode, component, treeId);
+				if (result != -1) {
+					return result;
+				}
+			}
+		}
+	}
+	else {
+		for (int childrenType = 0; childrenType < 3; childrenType++) {
+			for(TreeNode* cutpointNode: treeNode->getChildren(treeId, childrenType)) {
+				int result = getParentCutpoint(cutpointNode, component, treeId);
+				if (result != -1) {
+					return result;
+				}
 			}
 		}
 	}
 	return -1;
+}
+
+void findOtherRoots(TreeNode* treeNode, int parentType, int treeId, std::vector<int>* componentRoots) {
+	if (treeNode->isCutpoint) {
+		std::cout << "-----------" << std::endl;
+		std::cout << "cutpoint: " << treeNode->value << ", parentType: " << parentType << std::endl;
+		for (int childrenType = 0; childrenType < 3; childrenType++) {
+			for(TreeNode* componentNode: treeNode->getChildren(treeId, childrenType)) {
+				std::cout << "figlio: " << componentNode->value << ", tipo: " << childrenType << ", parentType: " << parentType << std::endl;
+				if (childrenType == parentType) {
+					componentRoots->push_back(componentNode->value);
+				}
+			}
+			for(TreeNode* componentNode: treeNode->getChildren(treeId, childrenType)) {
+				findOtherRoots(componentNode, childrenType, treeId, componentRoots);
+			}
+		}
+	}
+	else {
+		std::cout << "-----------" << std::endl;
+		std::cout << "componente: " << treeNode->value << ", parentType: " << parentType << std::endl;
+		for (int childrenType = 0; childrenType < 3; childrenType++) {
+			for(TreeNode* cutpointNode: treeNode->getChildren(treeId, childrenType)) {
+				std::cout << "figlio: " << cutpointNode->value << ", tipo: " << childrenType << ", parentType: " << parentType << std::endl;
+			}
+			for(TreeNode* cutpointNode: treeNode->getChildren(treeId, childrenType)) {
+				findOtherRoots(cutpointNode, childrenType, treeId, componentRoots);
+			}
+		}
+	}
 }
 
 void draw(Graph* G, string fileName)
@@ -110,40 +198,6 @@ void printArray(Array<int, int> array)
 		i++;
 	}
 	std::cout << array[i] << "]" << std::endl;
-}
-
-void populateGraph(Graph* G)
-{   
-	node n0 = G->newNode();
-	node n1 = G->newNode();
-	node n2 = G->newNode();
-	node n3 = G->newNode();
-	node n4 = G->newNode();
-	node n5 = G->newNode();
-	node n6 = G->newNode();
-	node n7 = G->newNode();
-	node n8 = G->newNode();
-	node n9 = G->newNode();
-	node n10 = G->newNode();
-	node n11 = G->newNode();
-
-	G->newEdge(n0, n1);
-	G->newEdge(n0, n5);
-	G->newEdge(n1, n2);
-	G->newEdge(n3, n4);
-	G->newEdge(n4, n1);
-	G->newEdge(n4, n10);
-	G->newEdge(n4, n11);
-	G->newEdge(n5, n3);
-	G->newEdge(n5, n4);
-	G->newEdge(n6, n5);
-	G->newEdge(n7, n5);
-	G->newEdge(n7, n6);
-	G->newEdge(n7, n8);
-	G->newEdge(n8, n6);
-	G->newEdge(n9, n1);
-	G->newEdge(n9, n2);
-	G->newEdge(n10, n11);
 }
 
 bool isOuterPlanar(Graph* G)
@@ -224,21 +278,7 @@ void readGraph(Graph* G, string fileName)
 	GraphIO::read(*G, fileName + ".gml", GraphIO::readGML);
 }
 
-void find1StackLayout(Graph* G) {
-	std::cout << "---- INIZIO FASE 1 ----" << std::endl;
-	std::cout << "il grafo ha " << G->numberOfNodes() << " nodi e " << G->numberOfEdges() << " archi" << std::endl;
-
-	// verifica se il grafo è outerplanare
-	if (isOuterPlanar(G)) {
-		std::cout << "il grafo è outerplanare" << std::endl;
-	}
-	else {
-		std::cout << "il grafo non è outerplanare" << std::endl;
-		std::cout << "---- FINE FASE 1 ----" << std::endl;
-		return;
-	}
-
-	// calcolo delle componenti biconnesse
+Array<Graph, int> getBiconnectedComponents(Graph* G) {
 	EdgeArray<int> edgeArray = EdgeArray<int>(*G);
 
 	int numberOfBiconnectedComponents = biconnectedComponents(*G, edgeArray);
@@ -247,7 +287,13 @@ void find1StackLayout(Graph* G) {
 	Array<Graph, int> biconnectedComponentsGraphs(numberOfBiconnectedComponents);
 	Array<std::unordered_map<int, node>, int> biconnectedComponentsNodeMaps(numberOfBiconnectedComponents);
 
-	for(edge e : G->edges) {
+	int edgeIndex = 0;
+	for(edge e: G->edges) {
+		std::cout << "edge,component = " << edgeIndex << "," << edgeArray[e] << std::endl;
+		edgeIndex++;
+	}
+
+	for(edge e: G->edges) {
 		// commentata linea 187 del file EdgeArray.h "OGDF_ASSERT(e->graphOf() == m_pGraph);"
 		Graph* currentGraph = &biconnectedComponentsGraphs[edgeArray[e]];
 		std::unordered_map<int, node>* currentMap = &biconnectedComponentsNodeMaps[edgeArray[e]];
@@ -264,6 +310,26 @@ void find1StackLayout(Graph* G) {
 
 		currentGraph->newEdge((*currentMap)[u_index], (*currentMap)[v_index]);
 	}
+	return biconnectedComponentsGraphs;
+}
+
+void find1StackLayout(Graph* G) {
+	std::cout << "---- INIZIO FASE 1 ----" << std::endl;
+	std::cout << "il grafo ha " << G->numberOfNodes() << " nodi e " << G->numberOfEdges() << " archi" << std::endl;
+
+	// verifica se il grafo è outerplanare
+	if (isOuterPlanar(G)) {
+		std::cout << "il grafo è outerplanare" << std::endl;
+	}
+	else {
+		std::cout << "il grafo non è outerplanare" << std::endl;
+		std::cout << "---- FINE FASE 1 ----" << std::endl;
+		return;
+	}
+
+	// calcolo delle componenti biconnesse
+	Array<Graph, int> biconnectedComponentsGraphs = getBiconnectedComponents(G);
+	int numberOfBiconnectedComponents = biconnectedComponentsGraphs.size();
 
 	Array<Array<int, int>, int> sourceAndSinkOfComponents(numberOfBiconnectedComponents);
 
@@ -272,7 +338,6 @@ void find1StackLayout(Graph* G) {
 		//draw(&biconnectedComponentsGraphs[i], "Component" + to_string(i) + ".svg" );
 
 		Array<int, int> sourceAndSink = getSourceAndSink(&biconnectedComponentsGraphs[i]);
-		
 		std::cout << "componente " << i << ": sorgente " << sourceAndSink[0] << ", pozzo " << sourceAndSink[1] << std::endl;
 
 		if (sourceAndSink[0] != -1 && sourceAndSink[1] != -1) {
@@ -335,7 +400,7 @@ void find1StackLayout(Graph* G) {
 		}
 	}
 
-	// nodeOfComponent è una mappa che restituisce il TreeNode dall'valore del TreeNode
+	// nodeOfComponent è una mappa che restituisce il TreeNode dal valore del TreeNode
 	std::unordered_map<int, TreeNode*> nodeOfComponent(numberOfBiconnectedComponents);
 	int idOfTreeNode = 0;
 
@@ -364,7 +429,7 @@ void find1StackLayout(Graph* G) {
 	std::cout << "costruito il BCT contenente " << cutpoints.size() << " cutpoint e " << numberOfBiconnectedComponents << " componenti biconnesse" << std::endl;
 
 	// radicazione del BCT
-	int componentRoot = 3;
+	int componentRoot = 7;
 	TreeNode* rootOfBCT = nodeOfComponent[componentRoot];
 
 	std::unordered_map<int, bool> visited;
@@ -384,6 +449,7 @@ void find1StackLayout(Graph* G) {
 		if (!u->isCutpoint) {
 			orderOfComponents[i] = u->value;
 			i++;
+
 		}
 
         // esplora tutti i nodi adiacenti e salva i figli del nodo (grado di libertà sull'ordine)
@@ -391,8 +457,30 @@ void find1StackLayout(Graph* G) {
             if (!visited[neighbor->id]) {
                 visited[neighbor->id] = true;
                 queue.push(neighbor);
-
-				u->addChild(neighbor);
+				int childrenType = -1;
+				if (neighbor->isCutpoint) {
+					if (sourceAndSinkOfComponents[u->value][0] == neighbor->value) {
+						childrenType = 0;
+					}
+					else if (sourceAndSinkOfComponents[u->value][1] == neighbor->value) {
+						childrenType = 2;
+					}
+					else {
+						childrenType = 1;
+					}
+				}
+				else {
+					if (sourceAndSinkOfComponents[neighbor->value][0] == u->value) {
+						childrenType = 0;
+					}
+					else if (sourceAndSinkOfComponents[neighbor->value][1] == u->value) {
+						childrenType = 2;
+					}
+					else {
+						childrenType = 1;
+					}
+				}
+				u->addChild(componentRoot, neighbor, childrenType);
             }
         }
     }
@@ -433,6 +521,7 @@ void find1StackLayout(Graph* G) {
 						isCutpointRestricted[cutpoint] = true;
 						cutpointRestrictedInComponent[component] = cutpoint;
 						std::cout << "il cutpoint " << cutpoint << " è ristretto, trovato con componente " << otherComponent << std::endl;
+						break;
 					}
 				}
 			}
@@ -445,6 +534,19 @@ void find1StackLayout(Graph* G) {
 		}
 	}
 
+	printBCT(rootOfBCT, componentRoot);
+
+	std::vector<int> componentRoots{componentRoot};
+
+	findOtherRoots(rootOfBCT, -1, componentRoot, &componentRoots);
+
+	std::cout << "POSSIBILI RADICI: ";
+	for (int root: componentRoots) {
+		std::cout << root << " ";
+	}
+	std::cout << std::endl;
+
+
 	Array<int, int> currentLayout = topologicalOrders[orderOfComponents[0]];
 
 	// fusione dei layout delle componenti biconnesse
@@ -455,7 +557,7 @@ void find1StackLayout(Graph* G) {
 		printArray(currentLayout);
 
 		Array<int, int> orderToAdd = topologicalOrders[component];
-		int cutpoint = getParentCutpoint(rootOfBCT, component);
+		int cutpoint = getParentCutpoint(rootOfBCT, component, componentRoot);
 
 		std::cout << "la componente " << component << " è collegata al grafo G_" << i << " tramite il cutpoint " << cutpoint << std::endl;
 
@@ -540,12 +642,12 @@ void find1StackLayout(Graph* G) {
 }
 
 void test(Graph* G) {
-	std::cout << G->firstEdge()->graphOf() << "   " << G << std::endl;
-	std::cout << G->firstEdge()->graphOf()->numberOfEdges() << "   " << G->numberOfEdges() << std::endl;
-	std::cout << G->firstEdge()->graphOf()->numberOfNodes() << "   " << G->numberOfNodes() << std::endl;
-	std::cout << G->firstEdge()->graphOf()->firstNode()->index() << "   " << G->firstNode()->index() << std::endl;
-	std::cout << G->firstEdge()->graphOf()->firstEdge()->target()->index() << "   " << G->firstEdge()->target()->index() << std::endl;
-	std::cout << std::endl;
+	//std::cout << G->firstEdge()->graphOf() << "   " << G << std::endl;
+	//std::cout << G->firstEdge()->graphOf()->numberOfEdges() << "   " << G->numberOfEdges() << std::endl;
+	//std::cout << G->firstEdge()->graphOf()->numberOfNodes() << "   " << G->numberOfNodes() << std::endl;
+	//std::cout << G->firstEdge()->graphOf()->firstNode()->index() << "   " << G->firstNode()->index() << std::endl;
+	//std::cout << G->firstEdge()->graphOf()->firstEdge()->target()->index() << "   " << G->firstEdge()->target()->index() << std::endl;
+	//std::cout << std::endl;
 }
 
 void readGraphFromArg(Graph* G, const char* graphString)
@@ -632,9 +734,7 @@ int main(int argc, char* argv[])
 		*/
 	}
 
-	//populateGraph(&G);
-
-	//draw(&G, "Graph.svg");
+	draw(&G, "Graph.svg");
 	//saveGraph(&G, "graph")
 
 	return 0;
