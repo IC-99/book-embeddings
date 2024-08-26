@@ -99,28 +99,38 @@ public:
                     queue.push((*restrictions)[u->value]);
                 }
 
+				bool hasSourcePermutations = false;
+				bool hasSinkPermutations = false;
+
+				if (permutations.find(u->value) != permutations.end()) {
+					if (permutations[u->value].find(0) != permutations[0].end()) {
+						hasSourcePermutations = true;
+					}
+					if (permutations[u->value].find(2) != permutations[2].end()) {
+						hasSinkPermutations = true;
+					}
+				}
+
                 std::vector<TreeNode*> sourceChildren = u->getChildren(treeId, 0);
 
-                if (permutations.find(u->value) != permutations.end()) {
-                    if (permutations[u->value].find(0) != permutations[0].end()) {
-                        //std::cout << "nel cutpoint " << u->value << " ci sono delle permutazioni di sorgente" << std::endl;
-                        for (int i: permutations[u->value][0]) {
-                            int index = indexOfChildrenOfCutpoint[u->value][0][i];
-                            queue.push(sourceChildren[index]);
-                        }
-                        if (toPermute) {
-                            if (std::next_permutation(permutations[u->value][0].begin(), permutations[u->value][0].end())) {
-                                toPermute = false;
-                            }
-                            else {
-                                std::vector<int> permutation;
-                                for (int i = 0; i < permutations[u->value][0].size(); i++) {
-                                    permutation.push_back(i);
-                                }
-                                permutations[u->value][0] = permutation;
-                            }
-                        }
-                    }
+                if (hasSourcePermutations) {
+					//std::cout << "nel cutpoint " << u->value << " ci sono delle permutazioni di sorgente" << std::endl;
+					for (int i: permutations[u->value][0]) {
+						int index = indexOfChildrenOfCutpoint[u->value][0][i];
+						queue.push(sourceChildren[index]);
+					}
+					if (toPermute) {
+						if (std::next_permutation(permutations[u->value][0].begin(), permutations[u->value][0].end())) {
+							toPermute = false;
+						}
+						else {
+							std::vector<int> permutation;
+							for (int i = 0; i < permutations[u->value][0].size(); i++) {
+								permutation.push_back(i);
+							}
+							permutations[u->value][0] = permutation;
+						}
+					}
                 } else {
                     for (TreeNode* child: sourceChildren) {
                         if (restrictions->find(u->value) != restrictions->end()) {
@@ -147,26 +157,24 @@ public:
 
                 std::vector<TreeNode*> sinkChildren = u->getChildren(treeId, 2);
                 
-                if (permutations.find(u->value) != permutations.end()) {
-                    if (permutations[u->value].find(2) != permutations[2].end()) {
-                        //std::cout << "nel cutpoint " << u->value << " ci sono delle permutazioni di pozzo" << std::endl;
-                        for (int i: permutations[u->value][2]) {
-                            int index = indexOfChildrenOfCutpoint[u->value][2][i];
-                            queue.push(sinkChildren[index]);
-                        }
-                        if (toPermute) {
-                            if (std::next_permutation(permutations[u->value][2].begin(), permutations[u->value][2].end())) {
-                                toPermute = false;
-                            }
-                            else {
-                                std::vector<int> permutation;
-                                for (int i = 0; i < permutations[u->value][2].size(); i++) {
-                                    permutation.push_back(i);
-                                }
-                                permutations[u->value][2] = permutation;
-                            }
-                        }  
-                    }
+                if (hasSinkPermutations) {
+					//std::cout << "nel cutpoint " << u->value << " ci sono delle permutazioni di pozzo" << std::endl;
+					for (int i: permutations[u->value][2]) {
+						int index = indexOfChildrenOfCutpoint[u->value][2][i];
+						queue.push(sinkChildren[index]);
+					}
+					if (toPermute) {
+						if (std::next_permutation(permutations[u->value][2].begin(), permutations[u->value][2].end())) {
+							toPermute = false;
+						}
+						else {
+							std::vector<int> permutation;
+							for (int i = 0; i < permutations[u->value][2].size(); i++) {
+								permutation.push_back(i);
+							}
+							permutations[u->value][2] = permutation;
+						}
+					}  
                 } else {
                     for (TreeNode* child: sinkChildren) {
                         if (restrictions->find(u->value) != restrictions->end()) {
@@ -457,6 +465,11 @@ bool isOuterPlanar(Graph* G)
 	return false;
 }
 
+bool hasHamiltonianPath(Graph* G) {
+	node startNode = G->firstNode();
+	return true;
+}
+
 Array<int, int> getSourceAndSink(Graph* G)
 {
 	Array<int, int> nullResult(2);
@@ -520,41 +533,6 @@ void saveGraph(Graph* G, string fileName)
 void readGraph(Graph* G, string fileName)
 {
 	GraphIO::read(*G, fileName + ".gml", GraphIO::readGML);
-}
-
-Array<Graph, int> getBiconnectedComponents(Graph* G) {
-	EdgeArray<int> edgeArray = EdgeArray<int>(*G);
-
-	int numberOfBiconnectedComponents = biconnectedComponents(*G, edgeArray);
-	std::cout << "il grafo ha " << numberOfBiconnectedComponents << " componenti biconnesse" << std::endl;
-
-	Array<Graph, int> biconnectedComponentsGraphs(numberOfBiconnectedComponents);
-	Array<std::unordered_map<int, node>, int> biconnectedComponentsNodeMaps(numberOfBiconnectedComponents);
-
-	int edgeIndex = 0;
-	for(edge e: G->edges) {
-		std::cout << "edge,component = " << edgeIndex << "," << edgeArray[e] << std::endl;
-		edgeIndex++;
-	}
-
-	for(edge e: G->edges) {
-		// commentata linea 187 del file EdgeArray.h "OGDF_ASSERT(e->graphOf() == m_pGraph);"
-		Graph* currentGraph = &biconnectedComponentsGraphs[edgeArray[e]];
-		std::unordered_map<int, node>* currentMap = &biconnectedComponentsNodeMaps[edgeArray[e]];
-
-		int u_index = e->source()->index();
-		int v_index = e->target()->index();
-
-		if (currentMap->find(u_index) == currentMap->end()) {
-			(*currentMap)[u_index] = currentGraph->newNode(u_index);
-		}
-		if (currentMap->find(v_index) == currentMap->end()) {
-			(*currentMap)[v_index] = currentGraph->newNode(v_index);
-		}
-
-		currentGraph->newEdge((*currentMap)[u_index], (*currentMap)[v_index]);
-	}
-	return biconnectedComponentsGraphs;
 }
 
 Array<int, int> mergeLayouts(Array<Array<int, int>, int>* topologicalOrders, std::vector<int>* orderOfComponents, TreeNode* rootNode, int componentRoot, Array<Array<int, int>, int>* sourceAndSinkOfComponents, std::unordered_map<int, TreeNode*>* restrictingComponentOfCutpoint) {
@@ -652,11 +630,6 @@ Array<int, int> mergeLayouts(Array<Array<int, int>, int>* topologicalOrders, std
 			}
 		}
 
-		//std::cout << "currentLayout: ";
-		//printArray(currentLayout);
-		//std::cout << "newLayout: ";
-		//printArray(newLayout);
-
 		currentLayout = newLayout;
 	}
 	return currentLayout;
@@ -678,8 +651,49 @@ void find1StackLayout(Graph* G) {
 	}
 
 	// calcolo delle componenti biconnesse
-	Array<Graph, int> biconnectedComponentsGraphs = getBiconnectedComponents(G);
-	int numberOfBiconnectedComponents = biconnectedComponentsGraphs.size();
+	EdgeArray<int> edgeArray = EdgeArray<int>(*G);
+
+	int numberOfBiconnectedComponents = biconnectedComponents(*G, edgeArray);
+	std::cout << "il grafo ha " << numberOfBiconnectedComponents << " componenti biconnesse" << std::endl;
+
+	Array<Graph, int> biconnectedComponentsGraphs(numberOfBiconnectedComponents);
+	Array<int, int> biconnectedComponentsSizes(numberOfBiconnectedComponents);
+
+	for (int i = 0; i < numberOfBiconnectedComponents; i++) {
+		biconnectedComponentsSizes[i] = 0;
+	}
+
+	Array<std::unordered_map<int, node>, int> biconnectedComponentsNodeMaps(numberOfBiconnectedComponents);
+
+	int edgeIndex = 0;
+	for(edge e: G->edges) {
+		std::cout << "edge,component = " << edgeIndex << "," << edgeArray[e] << std::endl;
+		edgeIndex++;
+	}
+
+	for(edge e: G->edges) {
+		// commentata linea 187 del file EdgeArray.h "OGDF_ASSERT(e->graphOf() == m_pGraph);"
+		Graph* currentGraph = &biconnectedComponentsGraphs[edgeArray[e]];
+		std::unordered_map<int, node>* currentMap = &biconnectedComponentsNodeMaps[edgeArray[e]];
+
+		int u_index = e->source()->index();
+		int v_index = e->target()->index();
+
+		if (currentMap->find(u_index) == currentMap->end()) {
+			(*currentMap)[u_index] = currentGraph->newNode(u_index);
+			biconnectedComponentsSizes[edgeArray[e]]++;
+		}
+		if (currentMap->find(v_index) == currentMap->end()) {
+			(*currentMap)[v_index] = currentGraph->newNode(v_index);
+			biconnectedComponentsSizes[edgeArray[e]]++;
+		}
+
+		currentGraph->newEdge((*currentMap)[u_index], (*currentMap)[v_index]);
+	}
+
+	for (int i = 0; i < numberOfBiconnectedComponents; i++) {
+		std::cout << "la dimensione della componente " << i << " è " << biconnectedComponentsSizes[i] << std::endl;
+	}
 
 	Array<Array<int, int>, int> sourceAndSinkOfComponents(numberOfBiconnectedComponents);
 
@@ -695,6 +709,15 @@ void find1StackLayout(Graph* G) {
 		}
 		else {
 			std::cout << "la componente biconnessa " << i << " non ha una sola sorgente e un solo pozzo" << std::endl;
+			std::cout << "---- FINE FASE 1 ----" << std::endl;
+			return;
+		}
+	}
+
+	// verifica se esiste un cammino hamiltoniano in ogni componente biconnessa
+	for(int i = 0; i < numberOfBiconnectedComponents; i++) {
+		if (!hasHamiltonianPath(&biconnectedComponentsGraphs[i])) {
+			std::cout << "la componente biconnessa " << i << " non contiene un cammino hamiltoniano" << std::endl;
 			std::cout << "---- FINE FASE 1 ----" << std::endl;
 			return;
 		}
@@ -842,6 +865,9 @@ void find1StackLayout(Graph* G) {
 	std::unordered_map<int, int> cutpointRestrictedInComponent;
 	std::unordered_map<int, TreeNode*> restrictingComponentOfCutpoint;
 
+	int betterRoot = -1;
+	bool betterRootFound = false;
+
 	for(int i = numberOfBiconnectedComponents - 1; i >= 0; i--) {
 		int component = orderOfComponents[i];
 		int countRestricted = 0;
@@ -872,6 +898,10 @@ void find1StackLayout(Graph* G) {
 						cutpointRestrictedInComponent[component] = cutpoint;
 						restrictingComponentOfCutpoint[cutpoint] = nodeOfComponent[otherComponent];
 						std::cout << "il cutpoint " << cutpoint << " è ristretto, trovato con componente " << otherComponent << std::endl;
+						if (!betterRootFound) {
+							betterRoot = otherComponent;
+							betterRootFound = true;
+						}
 						break;
 					}
 				}
@@ -892,8 +922,61 @@ void find1StackLayout(Graph* G) {
 		}
 	}
 
-	printBCT(rootOfBCT, componentRoot);
+	//printBCT(rootOfBCT, componentRoot);
 
+	if (betterRootFound) {
+		std::cout << "trovata una radice migliore: " << betterRoot << std::endl;
+		// radicazione del BCT
+		componentRoot = betterRoot;
+		rootOfBCT = nodeOfComponent[betterRoot];
+
+		std::unordered_map<int, bool> visited;
+		std::queue<TreeNode*> queue;
+
+		visited[rootOfBCT->id] = true;
+		queue.push(rootOfBCT);
+
+		// BST sul BCT non radicato per radicarlo e trovare l'ordine delle componenti (grado di libertà)
+		while (!queue.empty()) {
+			TreeNode* u = queue.front();
+			queue.pop();
+
+			// esplora tutti i nodi adiacenti e salva i figli del nodo (grado di libertà sull'ordine)
+			for (TreeNode* neighbor : u->neighbors) {
+				if (!visited[neighbor->id]) {
+					visited[neighbor->id] = true;
+					queue.push(neighbor);
+					int childrenType = -1;
+					if (neighbor->isCutpoint) {
+						if (sourceAndSinkOfComponents[u->value][0] == neighbor->value) {
+							childrenType = 0; // sorgente
+						}
+						else if (sourceAndSinkOfComponents[u->value][1] == neighbor->value) {
+							childrenType = 2; // pozzo
+						}
+						else {
+							childrenType = 1; // intermedio
+						}
+					}
+					else {
+						if (sourceAndSinkOfComponents[neighbor->value][0] == u->value) {
+							childrenType = 0;
+						}
+						else if (sourceAndSinkOfComponents[neighbor->value][1] == u->value) {
+							childrenType = 2;
+						}
+						else {
+							childrenType = 1;
+						}
+					}
+					u->addChild(componentRoot, neighbor, childrenType);
+				}
+			}
+		}
+	}
+
+
+	std::cout << "cerco nuove radici dal radicamento in " << rootOfBCT->value << std::endl;
 	// contiene una lista di coppie [componente su cui si può radicare, cutpoint causa di tale scelta] se questo cutpoint poi risulta essere ristretto allora l'albero deve essere ignorato
 	std::vector<std::vector<int>> componentRoots;
 	findOtherRoots(rootOfBCT, -1, componentRoot, &componentRoots);
@@ -961,20 +1044,24 @@ void find1StackLayout(Graph* G) {
 
 		std::cout << "################################### BCT RADICATO NELLA COMPONENTE " << componentRoot << std::endl;
 
-		BCTPermutationIterator iterator(rootOfBCT, componentRoot, &restrictingComponentOfCutpoint);
+		std::unordered_map<int, TreeNode*> emptyMap;
+
+		BCTPermutationIterator iterator(rootOfBCT, componentRoot, &emptyMap);
 
 		std::vector<int> order;
 		
 		while (iterator.hasNext()) {
 			order = iterator.next();
 
+			/*
 			std::cout << "ordine " << step << " trovato: ";
 			for (int component: order) {
 				std::cout << component << " ";
 			}
 			std::cout << std::endl;
-
-			Array<int, int> result = mergeLayouts(&topologicalOrders, &order, rootOfBCT, componentRoot, &sourceAndSinkOfComponents, &restrictingComponentOfCutpoint);
+			*/
+			
+			Array<int, int> result = mergeLayouts(&topologicalOrders, &order, rootOfBCT, componentRoot, &sourceAndSinkOfComponents, &emptyMap);
 
 			std::cout << "RISULTATO " << step << ": ";
 			for (int n: result) {
@@ -1005,7 +1092,7 @@ void find1StackLayout(Graph* G) {
 		visited[rootOfBCT->id] = true;
 		queue.push(rootOfBCT);
 
-		// BST sul BCT non radicato per trovare l'ordine delle componenti
+		// BST sul BCT per trovare l'ordine delle componenti
 		while (!queue.empty()) {
 			TreeNode* u = queue.front();
 			queue.pop();
@@ -1013,31 +1100,24 @@ void find1StackLayout(Graph* G) {
 				orderOfComponents[i] = u->value;
 				i++;
 			}
-
-			// esplora tutti i nodi adiacenti e salva i figli del nodo (grado di libertà sull'ordine)
-			for (TreeNode* neighbor : u->neighbors) {
-				if (!visited[neighbor->id]) {
-					visited[neighbor->id] = true;
-					queue.push(neighbor);
+			for (int childType = 0; childType < 3; childType++) {
+				for(TreeNode* child: u->getChildren(componentRoot, childType)) {
+					queue.push(child);
 				}
 			}
 		}
-
-		std::cout << "ordine delle componenti: ";
-		printArray(orderOfComponents);
 
 		// ricerca dei cutpoint ristretti
 		std::unordered_map<int, bool> isCutpointRestricted;
 		std::unordered_map<int, int> cutpointRestrictedInComponent;
 		std::unordered_map<int, TreeNode*> restrictingComponentOfCutpoint;
 
-		for(int i = numberOfBiconnectedComponents - 1; i >= 0; i--) {
+		for(int i = numberOfBiconnectedComponents - 1; i >= 0 && hasNewResults; i--) {
 			int component = orderOfComponents[i];
 			int countRestricted = 0;
 			cutpointRestrictedInComponent[component] = -1;
 
 			for(int cutpoint: cutpointsOfComponent[component]) {
-				//std::cout << "analizzando cutpoint " << cutpoint << " nella componente " << component << std::endl;
 				for(int j = numberOfBiconnectedComponents - 1; j > i; j--) {
 					int otherComponent = orderOfComponents[j];
 					bool isCutpointInOtherComponent = false;
@@ -1049,11 +1129,7 @@ void find1StackLayout(Graph* G) {
 					}
 
 					if (isCutpointInOtherComponent) {
-						//std::cout << "il cutpoint " << cutpoint << " fa parte della componente " << otherComponent << std::endl;
-
 						bool isIntermediate = cutpoint != sourceAndSinkOfComponents[otherComponent][0] && cutpoint != sourceAndSinkOfComponents[otherComponent][1];
-
-						//std::cout << "il cutpoint " << cutpoint << " è intermedio in " << otherComponent << ": " << isIntermediate << std::endl;
 
 						if (isIntermediate || cutpointRestrictedInComponent[otherComponent] != -1) {
 							countRestricted++;
@@ -1069,7 +1145,7 @@ void find1StackLayout(Graph* G) {
 					}
 				}
 			}
-			//std::cout << "NUMERO NODI RISTRETTI PER LA COMPONENTE " << component << ": " << countRestricted << std::endl;
+			
 			if (countRestricted > 1) {
 				std::cout << "TROVATA COPPIA CONFLITTUALE" << std::endl;
 				std::cout << "---- FINE FASE 2 ----" << std::endl;
@@ -1083,12 +1159,6 @@ void find1StackLayout(Graph* G) {
 			
 			while (iterator.hasNext()) {
 				order = iterator.next();
-
-				std::cout << "ordine " << step << " trovato: ";
-				for (int component: order) {
-					std::cout << component << " ";
-				}
-				std::cout << std::endl;
 
 				Array<int, int> result = mergeLayouts(&topologicalOrders, &order, rootOfBCT, componentRoot, &sourceAndSinkOfComponents, &restrictingComponentOfCutpoint);
 
@@ -1106,6 +1176,7 @@ void find1StackLayout(Graph* G) {
 		}
 	}
 
+	std::cout << "embedding trovati: " << step - 1 << std::endl;
 	std::cout << "TERMINATO" << std::endl;
 
 }

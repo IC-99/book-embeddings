@@ -36,8 +36,16 @@ nodes7 = [0, 1, 2]
 G8 = {0: [1, 2], 1: [3], 2: [1], 4: [3], 5: [3, 9], 6: [3], 7: [3, 6], 8: [4], 10: [6], 11: [8, 13], 12: [11, 13]}
 nodes8 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
-#G = G4
-#nodes = nodes4
+#graph9
+G9 = {0: [4], 1: [0, 2], 2: [0, 3], 5: [4], 6: [4], 7: [3], 8: [3], 9: [3]}
+nodes9 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+#graph_test
+G_test = {0: [1], 1: [3], 2: [1, 3], 4: [0, 2]}
+nodes_test = [0, 1, 2, 3, 4]
+
+G = G_test
+nodes = nodes_test
 
 def is_book_embedding(order):
     # Mappa i nodi all'indice del loro ordinamento
@@ -77,11 +85,10 @@ step = 0
 percentage = 0
 steps = factorial(len(nodes))
 for order in itertools.permutations(nodes):
-    if int(step / steps * 100) > percentage:
-        percentage = int(step / steps * 100)
-        print(f'{percentage}%')
+    if int(step / steps * 10) > percentage:
+        percentage = int(step / steps * 10)
+        print(f'{percentage}0%')
     if is_book_embedding(list(order)):
-        print(order)
         solutions.append(order)
     step += 1
 
