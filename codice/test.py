@@ -36,7 +36,7 @@ def is_book_embedding(graph, order):
     
     return True
 
-def brute_embedding(graph, nodes):
+def brute_embedding(graph, nodes, stats = False):
     solutions = []
     step = 0
     percentage = 0
@@ -44,26 +44,39 @@ def brute_embedding(graph, nodes):
     for order in itertools.permutations(nodes):
         if int(step / steps * 10) > percentage:
             percentage = int(step / steps * 10)
-            print(f'{percentage}0%')
+            if stats:
+                print(f'{percentage}0%')
         if is_book_embedding(graph, list(order)):
-            solutions.append(order)
+            solutions.append(list(order))
         step += 1
-
-    return len(solutions)
+    return solutions
 
 def esegui_comando(comando):
     # Esegue il comando di shell e cattura l'output
     risultato = subprocess.run(comando, shell=True, capture_output=True, text=True)
     return risultato.stdout, risultato.stderr
 
-def n_embeddings(stdout: str):
+def n_embeddings(stdout: str, graph_size: int):
     words = stdout.split(" ")
     res = ""
     for char in words[-1]:
         if char == '\n':
             break
         res += char
-    return int(res)
+    read = -1000000000
+    embeddings = []
+    embedding = []
+    for i in range(len(words)):
+        if "\nRISULTATO" in words[i]:
+            embedding = []
+            read = -1
+        if read > 0:
+            embedding.append(int(words[i]))
+            if read == graph_size:
+                embeddings.append(embedding)
+                read = -1000000000
+        read += 1
+    return embeddings
 
 def random_graph(n):
     nodes = list(range(n))
@@ -85,7 +98,8 @@ def random_graph(n):
     for _ in range(random.randint(n, n * (n - 1) // 2)):
         nodo1 = random.randint(0, n-2)
         nodo2 = random.randint(nodo1 + 1, n - 1)
-        dag[nodi[nodo1]].add(nodi[nodo2])
+        if random.random() < 0.15:
+            dag[nodi[nodo1]].add(nodi[nodo2])
     
     return dag, nodes
 
@@ -98,16 +112,37 @@ def graph_to_string(graph, nodes):
             graph_str += str(source_node) + ',' + str(target_node) + '\n'
     return graph_str
 
+def equals_embeddings(embs1, embs2):
+    if len(embs1) != len(embs2):
+        return False
+    for emb1 in embs1:
+        if not emb1 in embs2:
+            return False
+    return True
+
 def main():
-    graph, nodes = random_graph(5)
-    comando = "./binary '" + graph_to_string(graph, nodes) + "'"
-    stdout, stderr = esegui_comando(comando)
+    count = 0
+    n_test = 1000
+    graph_size = 8
+    for step in range(n_test):
+        graph, nodes = random_graph(graph_size)
+        comando = "./binary '" + graph_to_string(graph, nodes) + "'"
+        stdout, stderr = esegui_comando(comando)
 
-    print(stdout)
-
-    res = n_embeddings(stdout)
-    brute_res = brute_embedding(graph, nodes)
-    print("########TEST########", res, brute_res)
+        res = []
+        try:
+            res = n_embeddings(stdout, graph_size)
+        except:
+            pass
+        brute_res = brute_embedding(graph, nodes)
+        if equals_embeddings(res, brute_res):
+            count += 1
+            print("TEST PASSATO", len(res), "==", len(brute_res))
+        else:
+            print("########TEST NON PASSATO########", len(res), "!=", len(brute_res))
+            print("con il grafo")
+            print(graph)
+    print("l'algoritmo ha passato con successo", count, "test su", n_test)
 
 if __name__ == "__main__":
     main()

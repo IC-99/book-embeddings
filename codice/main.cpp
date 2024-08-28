@@ -6,6 +6,7 @@
 #include <ogdf/decomposition/BCTree.h>
 #include <ogdf/fileformats/GraphIO.h>
 #include <ogdf/energybased/FMMMLayout.h>
+#include <ogdf/basic/CombinatorialEmbedding.h>
 #include <iostream>
 #include <unordered_map>
 #include <sstream>
@@ -465,35 +466,52 @@ bool isOuterPlanar(Graph* G)
 	return false;
 }
 
-bool hasHamiltonianPath(Graph* G) {
-	node startNode = G->firstNode();
-	return true;
+
+bool hasHamiltonianPath(Graph* G, node source, node sink, int targetSize) {
+	if (source == sink){
+		return targetSize == 1;
+	}
+	bool result = false;
+	for (adjEntry adj: source->adjEntries) {
+		edge e = adj->theEdge();
+		if (e->target() != source) {
+			result = result || hasHamiltonianPath(G, e->target(), sink, targetSize - 1);
+		}
+	}
+	return result;
 }
 
-Array<int, int> getSourceAndSink(Graph* G)
+/*
+bool ciao(Graph* G, node source, node sink) {
+	planarEmbedPlanarGraph(*G);
+	std::cout << G->representsCombEmbedding() << std::endl;
+ 	ConstCombinatorialEmbedding emb(*G);
+	emb.computeFaces();
+	face ext = emb.maximalFace();
+	std::cout << "risultati: " << ext->size() << " " << G->numberOfNodes() << " " << hasHamiltonianPath(G, source, sink, G->numberOfNodes()) << std::endl;
+	return ext->size() == G->numberOfNodes();
+}*/
+
+Array<node, int> getSourceAndSink(Graph* G)
 {
-	Array<int, int> nullResult(2);
-	Array<int, int> sourceAndSink(2);
-	nullResult[0] = -1;
-	nullResult[1] = -1;
-	sourceAndSink[0] = -1;
-	sourceAndSink[1] = -1;
+	Array<node, int> nullResult({nullptr, nullptr});
+	Array<node, int> sourceAndSink({nullptr, nullptr});
 
 	for(node v : G->nodes) {
 		if (v->indeg() == 0) {
-			if (sourceAndSink[0] != -1) {
+			if (sourceAndSink[0] != nullptr) {
 				return nullResult;
 			}
 			else {
-				sourceAndSink[0] = v->index();
+				sourceAndSink[0] = v;
 			}
 		}
 		if (v->outdeg() == 0) {
-			if (sourceAndSink[1] != -1) {
+			if (sourceAndSink[1] != nullptr) {
 				return nullResult;
 			}
 			else {
-				sourceAndSink[1] = v->index();
+				sourceAndSink[1] = v;
 			}
 		}
 	}
@@ -535,7 +553,7 @@ void readGraph(Graph* G, string fileName)
 	GraphIO::read(*G, fileName + ".gml", GraphIO::readGML);
 }
 
-Array<int, int> mergeLayouts(Array<Array<int, int>, int>* topologicalOrders, std::vector<int>* orderOfComponents, TreeNode* rootNode, int componentRoot, Array<Array<int, int>, int>* sourceAndSinkOfComponents, std::unordered_map<int, TreeNode*>* restrictingComponentOfCutpoint) {
+Array<int, int> mergeLayouts(Array<Array<int, int>, int>* topologicalOrders, std::vector<int>* orderOfComponents, TreeNode* rootNode, int componentRoot, Array<Array<node, int>, int>* sourceAndSinkOfComponents, std::unordered_map<int, TreeNode*>* restrictingComponentOfCutpoint) {
 	Array<int, int> currentLayout = (*topologicalOrders)[(*orderOfComponents)[0]];
 
 	// fusione dei layout delle componenti biconnesse
@@ -582,7 +600,7 @@ Array<int, int> mergeLayouts(Array<Array<int, int>, int>* topologicalOrders, std
 		}
 
 		if (notAddedYet) {
-			if (cutpoint == (*sourceAndSinkOfComponents)[component][0]) {
+			if (cutpoint == (*sourceAndSinkOfComponents)[component][0]->index()) {
 				//std::cout << "CASISTICA SORGENTE" << std::endl;
 				int j = 0;
 				while (j < currentLayout.size()) {
@@ -604,7 +622,7 @@ Array<int, int> mergeLayouts(Array<Array<int, int>, int>* topologicalOrders, std
 					j++;
 				}
 			}
-			else if (cutpoint == (*sourceAndSinkOfComponents)[component][1]){
+			else if (cutpoint == (*sourceAndSinkOfComponents)[component][1]->index()){
 				//std::cout << "CASISTICA POZZO" << std::endl;
 				int j = 0;
 				if (cutpoint != currentLayout[0]) {
@@ -691,20 +709,16 @@ void find1StackLayout(Graph* G) {
 		currentGraph->newEdge((*currentMap)[u_index], (*currentMap)[v_index]);
 	}
 
-	for (int i = 0; i < numberOfBiconnectedComponents; i++) {
-		std::cout << "la dimensione della componente " << i << " è " << biconnectedComponentsSizes[i] << std::endl;
-	}
-
-	Array<Array<int, int>, int> sourceAndSinkOfComponents(numberOfBiconnectedComponents);
+	Array<Array<node, int>, int> sourceAndSinkOfComponents(numberOfBiconnectedComponents);
 
 	// verifica se ogni componente ha una sola sorgente e un solo pozzo
 	for(int i = 0; i < numberOfBiconnectedComponents; i++) {
 		//draw(&biconnectedComponentsGraphs[i], "Component" + to_string(i) + ".svg" );
 
-		Array<int, int> sourceAndSink = getSourceAndSink(&biconnectedComponentsGraphs[i]);
+		Array<node, int> sourceAndSink = getSourceAndSink(&biconnectedComponentsGraphs[i]);
 		std::cout << "componente " << i << ": sorgente " << sourceAndSink[0] << ", pozzo " << sourceAndSink[1] << std::endl;
 
-		if (sourceAndSink[0] != -1 && sourceAndSink[1] != -1) {
+		if (sourceAndSink[0] != nullptr && sourceAndSink[1] != nullptr) {
 			sourceAndSinkOfComponents[i] = sourceAndSink;
 		}
 		else {
@@ -716,7 +730,20 @@ void find1StackLayout(Graph* G) {
 
 	// verifica se esiste un cammino hamiltoniano in ogni componente biconnessa
 	for(int i = 0; i < numberOfBiconnectedComponents; i++) {
-		if (!hasHamiltonianPath(&biconnectedComponentsGraphs[i])) {
+		Array<node, int> sourceAndSink = getSourceAndSink(&biconnectedComponentsGraphs[i]);
+		node source = sourceAndSink[0];
+		node sink = sourceAndSink[1];
+		bool found = false;
+		for (adjEntry adj: source->adjEntries){
+			edge e = adj->theEdge();
+			if (e->source() == source) {
+				if (e->target() == sink) {
+					found = true;
+					break;
+				}
+			}
+		}
+		if (!found || !hasHamiltonianPath(&biconnectedComponentsGraphs[i], source, sink, biconnectedComponentsSizes[i])) {
 			std::cout << "la componente biconnessa " << i << " non contiene un cammino hamiltoniano" << std::endl;
 			std::cout << "---- FINE FASE 1 ----" << std::endl;
 			return;
@@ -831,10 +858,10 @@ void find1StackLayout(Graph* G) {
                 queue.push(neighbor);
 				int childrenType = -1;
 				if (neighbor->isCutpoint) {
-					if (sourceAndSinkOfComponents[u->value][0] == neighbor->value) {
+					if (sourceAndSinkOfComponents[u->value][0]->index() == neighbor->value) {
 						childrenType = 0; // sorgente
 					}
-					else if (sourceAndSinkOfComponents[u->value][1] == neighbor->value) {
+					else if (sourceAndSinkOfComponents[u->value][1]->index() == neighbor->value) {
 						childrenType = 2; // pozzo
 					}
 					else {
@@ -842,10 +869,10 @@ void find1StackLayout(Graph* G) {
 					}
 				}
 				else {
-					if (sourceAndSinkOfComponents[neighbor->value][0] == u->value) {
+					if (sourceAndSinkOfComponents[neighbor->value][0]->index() == u->value) {
 						childrenType = 0;
 					}
-					else if (sourceAndSinkOfComponents[neighbor->value][1] == u->value) {
+					else if (sourceAndSinkOfComponents[neighbor->value][1]->index() == u->value) {
 						childrenType = 2;
 					}
 					else {
@@ -888,7 +915,7 @@ void find1StackLayout(Graph* G) {
 				if (isCutpointInOtherComponent) {
 					std::cout << "il cutpoint " << cutpoint << " fa parte della componente " << otherComponent << std::endl;
 
-					bool isIntermediate = cutpoint != sourceAndSinkOfComponents[otherComponent][0] && cutpoint != sourceAndSinkOfComponents[otherComponent][1];
+					bool isIntermediate = cutpoint != sourceAndSinkOfComponents[otherComponent][0]->index() && cutpoint != sourceAndSinkOfComponents[otherComponent][1]->index();
 
 					std::cout << "il cutpoint " << cutpoint << " è intermedio in " << otherComponent << ": " << isIntermediate << std::endl;
 
@@ -948,10 +975,10 @@ void find1StackLayout(Graph* G) {
 					queue.push(neighbor);
 					int childrenType = -1;
 					if (neighbor->isCutpoint) {
-						if (sourceAndSinkOfComponents[u->value][0] == neighbor->value) {
+						if (sourceAndSinkOfComponents[u->value][0]->index() == neighbor->value) {
 							childrenType = 0; // sorgente
 						}
-						else if (sourceAndSinkOfComponents[u->value][1] == neighbor->value) {
+						else if (sourceAndSinkOfComponents[u->value][1]->index() == neighbor->value) {
 							childrenType = 2; // pozzo
 						}
 						else {
@@ -959,10 +986,10 @@ void find1StackLayout(Graph* G) {
 						}
 					}
 					else {
-						if (sourceAndSinkOfComponents[neighbor->value][0] == u->value) {
+						if (sourceAndSinkOfComponents[neighbor->value][0]->index() == u->value) {
 							childrenType = 0;
 						}
-						else if (sourceAndSinkOfComponents[neighbor->value][1] == u->value) {
+						else if (sourceAndSinkOfComponents[neighbor->value][1]->index() == u->value) {
 							childrenType = 2;
 						}
 						else {
@@ -1010,10 +1037,10 @@ void find1StackLayout(Graph* G) {
 					queue.push(neighbor);
 					int childrenType = -1;
 					if (neighbor->isCutpoint) {
-						if (sourceAndSinkOfComponents[u->value][0] == neighbor->value) {
+						if (sourceAndSinkOfComponents[u->value][0]->index() == neighbor->value) {
 							childrenType = 0; // sorgente
 						}
-						else if (sourceAndSinkOfComponents[u->value][1] == neighbor->value) {
+						else if (sourceAndSinkOfComponents[u->value][1]->index() == neighbor->value) {
 							childrenType = 2; // pozzo
 						}
 						else {
@@ -1021,10 +1048,10 @@ void find1StackLayout(Graph* G) {
 						}
 					}
 					else {
-						if (sourceAndSinkOfComponents[neighbor->value][0] == u->value) {
+						if (sourceAndSinkOfComponents[neighbor->value][0]->index() == u->value) {
 							childrenType = 0;
 						}
-						else if (sourceAndSinkOfComponents[neighbor->value][1] == u->value) {
+						else if (sourceAndSinkOfComponents[neighbor->value][1]->index() == u->value) {
 							childrenType = 2;
 						}
 						else {
@@ -1129,7 +1156,7 @@ void find1StackLayout(Graph* G) {
 					}
 
 					if (isCutpointInOtherComponent) {
-						bool isIntermediate = cutpoint != sourceAndSinkOfComponents[otherComponent][0] && cutpoint != sourceAndSinkOfComponents[otherComponent][1];
+						bool isIntermediate = cutpoint != sourceAndSinkOfComponents[otherComponent][0]->index() && cutpoint != sourceAndSinkOfComponents[otherComponent][1]->index();
 
 						if (isIntermediate || cutpointRestrictedInComponent[otherComponent] != -1) {
 							countRestricted++;
