@@ -58,11 +58,6 @@ def esegui_comando(comando):
 
 def n_embeddings(stdout: str, graph_size: int):
     words = stdout.split(" ")
-    res = ""
-    for char in words[-1]:
-        if char == '\n':
-            break
-        res += char
     read = -1000000000
     embeddings = []
     embedding = []
@@ -129,20 +124,16 @@ def main():
         comando = "./binary '" + graph_to_string(graph, nodes) + "'"
         stdout, stderr = esegui_comando(comando)
 
-        res = []
-        try:
-            res = n_embeddings(stdout, graph_size)
-        except:
-            pass
+        res = n_embeddings(stdout, graph_size)
         brute_res = brute_embedding(graph, nodes)
         if equals_embeddings(res, brute_res):
             count += 1
-            print("TEST PASSATO", len(res), "==", len(brute_res))
+            print("TEST SUPERATO", len(res), "==", len(brute_res))
         else:
-            print("########TEST NON PASSATO########", len(res), "!=", len(brute_res))
+            print("########TEST NON SUPERATO########", len(res), "!=", len(brute_res))
             print("con il grafo")
             print(graph)
-    print("l'algoritmo ha passato con successo", count, "test su", n_test)
+    print("l'algoritmo ha superato con successo", count, "test su", n_test)
 
 if __name__ == "__main__":
     main()

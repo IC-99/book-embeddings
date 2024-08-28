@@ -1,0 +1,72 @@
+find1StackLayout(Graph G):
+  // FASE 1
+
+  if not isOuterPlanar(G): return
+
+  biconnectedComponentsGraphs = getBiconnectedComponentsGraphs(G)
+
+  sourceAndSinkOfComponents
+  if not getSourceAndSinkOfComponents(biconnectedComponentsGraphs, sourceAndSinkOfComponents): return
+
+  if not checkHamiltonianPaths((biconnectedComponentsGraphs, sourceAndSinkOfComponents): return
+
+  // FASE 2
+  componentsOfNode: 	mappa[indice nodo] = lista di componenti a cui il nodo appartiene
+  cutpointsOfComponent: mappa[indice componente] = lista di cutpoint nella componente
+  cutpoints: 		lista dei cutpoint in G
+
+  treeNodeOfComponent: 	array[indice componente] = nodo del BCT associato alla componente
+
+  componentRoot = 0
+  rootOfBCT = treeNodeOfComponent[componentRoot]
+  orderOfComponents = rootBCT(rootOfBCT, sourceAndSinkOfComponents)
+
+  betterRoot = -1
+  restrictingComponentOfCutpoint: mappa[indice cutpoint] = indice componente responsabile della restrizione
+  if not getRestrictions(componentsOfNode, cutpointsOfComponent, sourceAndSinkOfComponents, treeNodeOfComponent, orderOfComponents, restrictingComponentOfCutpoint, betterRoot): return
+
+  if betterRoot != -1:
+    componentRoot = betterRoot
+    rootOfBCT = treeNodeOfComponent[componentRoot]
+    orderOfComponents = rootBCT(rootOfBCT, sourceAndSinkOfComponents)
+
+  componentRoots: 	lista di coppie [potenziale radice, cutpoint padre (nel radicamento iniziale)]
+  findOtherRoots(rootOfBCT, -1, componentRoot, componentRoots)
+
+  for otherComponentRoot, parentCutpoint in componentRoots:
+    otherRootOfBCT = treeNodeOfComponent[otherComponentRoot]
+    rootBCT(otherRootOfBCT, sourceAndSinkOfComponents)
+
+  resultsCounter = 0
+  iterator(rootOfBCT, componentRoot, {})
+  order
+
+  while iterator.hasNext():
+    order = iterator.next()  
+    result = mergeLayouts(topologicalOrders, order, rootOfBCT, sourceAndSinkOfComponents, {})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
