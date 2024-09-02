@@ -1,65 +1,77 @@
 <?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" version="1.1" baseProfile="full" viewBox="13 13 199 176">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" version="1.1" baseProfile="full" viewBox="13 13 123 119">
 	<g>
 		<g>
-			<polygon points="29.5 109.645 32.5402 107.258 33.3059 108.969 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
-			<path fill="none" d=" M60,96 L29.5,109.645" stroke="#000000" stroke-width="1.000000px" />
+			<polygon points="119.5 38.7742 117.346 41.9835 116.089 40.592 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M96,60 L119.5,38.7742" stroke="#000000" stroke-width="1.000000px" />
 		</g>
 		<g>
-			<polygon points="47.1579 65.5 49.4771 68.5923 47.7491 69.3199 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
-			<path fill="none" d=" M60,96 L47.1579,65.5" stroke="#000000" stroke-width="1.000000px" />
+			<polygon points="97.6512 95.5 96.5404 91.7976 98.4134 91.7105 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M96,60 L97.6512,95.5" stroke="#000000" stroke-width="1.000000px" />
 		</g>
 		<g>
-			<polygon points="91.5 111.346 87.7182 110.547 88.5394 108.861 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
-			<path fill="none" d=" M60,96 L91.5,111.346" stroke="#000000" stroke-width="1.000000px" />
+			<polygon points="63.5 50.25 67.3612 50.4296 66.8225 52.2255 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M96,60 L63.5,50.25" stroke="#000000" stroke-width="1.000000px" />
 		</g>
 		<g>
-			<polygon points="31.3333 29.5 33.7131 32.546 31.9997 33.3075 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
-			<path fill="none" d=" M44,58 L31.3333,29.5" stroke="#000000" stroke-width="1.000000px" />
+			<polygon points="119.5 30.0769 115.635 30.0536 116.1 28.2374 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M88,22 L119.5,30.0769" stroke="#000000" stroke-width="1.000000px" />
 		</g>
 		<g>
-			<polygon points="127.5 131.625 123.788 130.545 124.733 128.926 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
-			<path fill="none" d=" M99,115 L127.5,131.625" stroke="#000000" stroke-width="1.000000px" />
+			<polygon points="94.4211 52.5 92.7311 49.0236 94.5659 48.6373 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M88,22 L94.4211,52.5" stroke="#000000" stroke-width="1.000000px" />
 		</g>
 		<g>
-			<polygon points="195.5 174.609 191.908 173.182 193.002 171.659 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
-			<path fill="none" d=" M171,157 L195.5,174.609" stroke="#000000" stroke-width="1.000000px" />
+			<polygon points="63.5 41.9062 65.8192 38.8139 67.0016 40.2691 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M88,22 L63.5,41.9062" stroke="#000000" stroke-width="1.000000px" />
 		</g>
 		<g>
-			<polygon points="163.5 152.625 159.788 151.545 160.733 149.926 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
-			<path fill="none" d=" M135,136 L163.5,152.625" stroke="#000000" stroke-width="1.000000px" />
+			<polygon points="90.5 107.412 87.7431 110.121 86.7924 108.505 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M64,123 L90.5,107.412" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="59.2857 115.5 56.4963 112.824 58.0838 111.826 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M42,88 L59.2857,115.5" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="29.5 27.7353 33.0483 29.2685 31.9094 30.7579 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M56,48 L29.5,27.7353" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="44.625 80.5 44.9789 76.6508 46.7487 77.2702 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M56,48 L44.625,80.5" stroke="#000000" stroke-width="1.000000px" />
 		</g>
 	</g>
 	<g>
-		<ellipse cx="203" cy="180" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
-		<text x="203" y="180" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">0</text>
+		<ellipse cx="127" cy="32" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="127" y="32" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">0</text>
 	</g>
 	<g>
-		<ellipse cx="60" cy="96" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
-		<text x="60" y="96" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">1</text>
+		<ellipse cx="96" cy="60" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="96" y="60" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">1</text>
 	</g>
 	<g>
-		<ellipse cx="22" cy="113" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
-		<text x="22" y="113" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">2</text>
+		<ellipse cx="22" cy="22" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="22" y="22" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">2</text>
 	</g>
 	<g>
-		<ellipse cx="44" cy="58" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
-		<text x="44" y="58" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">3</text>
+		<ellipse cx="88" cy="22" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="88" y="22" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">3</text>
 	</g>
 	<g>
-		<ellipse cx="99" cy="115" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
-		<text x="99" y="115" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">4</text>
+		<ellipse cx="98" cy="103" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="98" y="103" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">4</text>
 	</g>
 	<g>
-		<ellipse cx="171" cy="157" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
-		<text x="171" y="157" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">5</text>
+		<ellipse cx="64" cy="123" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="64" y="123" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">5</text>
 	</g>
 	<g>
-		<ellipse cx="135" cy="136" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
-		<text x="135" y="136" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">6</text>
+		<ellipse cx="42" cy="88" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="42" y="88" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">6</text>
 	</g>
 	<g>
-		<ellipse cx="28" cy="22" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
-		<text x="28" y="22" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">7</text>
+		<ellipse cx="56" cy="48" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="56" y="48" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">7</text>
 	</g>
 </svg>

@@ -1,0 +1,73 @@
+find1StackLayout(Graph G):
+  // FASE 1
+
+  if not isOuterPlanar(G): return
+
+  biconnectedComponentsGraphs:  array[indice componente] = sottografo della componente
+  biconnectedComponentsGraphs = getBiconnectedComponentsGraphs(G)
+
+  sourceAndSinkOfComponents: array[indice componente] = [sorgente componente, pozzo componente]
+  sourceAndSinkOfComponents = []
+  if not getSourceAndSinkOfComponents(biconnectedComponentsGraphs, sourceAndSinkOfComponents): return
+  
+  if not checkHamiltonianPaths(biconnectedComponentsGraphs, sourceAndSinkOfComponents): return
+
+  topologicalOrders: array[indice componente] = ordine topologico componente
+  topologicalOrders = getTopologicalOrders(biconnectedComponentsGraphs)
+
+  // FASE 2
+
+  componentsOfNode: 	  mappa[indice nodo] = lista di componenti a cui il nodo appartiene
+  cutpointsOfComponent: mappa[indice componente] = lista di cutpoint nella componente
+  cutpoints:            lista dei cutpoint in G
+  
+  treeNodeOfComponent: 	array[indice componente] = nodo del BCT associato alla componente
+  treeNodeOfComponent = createBCT(numberOfBiconnectedComponents, cutpoints, componentsOfNode)
+
+  componentRoot = 0
+  rootOfBCT = treeNodeOfComponent[componentRoot]
+  orderOfComponents = rootBCT(rootOfBCT, sourceAndSinkOfComponents)
+
+  betterRoot = -1
+  restrictingComponentOfCutpoint: mappa[indice cutpoint] = indice componente responsabile della restrizione
+  restrictingComponentOfCutpoint = {}
+  if not getRestrictions(componentsOfNode, cutpointsOfComponent, sourceAndSinkOfComponents, treeNodeOfComponent, orderOfComponents, restrictingComponentOfCutpoint, betterRoot): return
+
+  if betterRoot != -1:
+    componentRoot = betterRoot
+    rootOfBCT = treeNodeOfComponent[componentRoot]
+    orderOfComponents = rootBCT(rootOfBCT, sourceAndSinkOfComponents)
+
+  componentRoots: 	lista di coppie [potenziale radice, cutpoint padre (nel radicamento iniziale)]
+  componentRoots = []
+  findOtherRoots(rootOfBCT, -1, componentRoot, componentRoots)
+
+  for (otherComponentRoot, parentCutpoint) in componentRoots:
+    otherRootOfBCT = treeNodeOfComponent[otherComponentRoot]
+    rootBCT(otherRootOfBCT, sourceAndSinkOfComponents)
+
+  resultsCounter = 0
+  iterator = BCTPermutationIterator(rootOfBCT, componentRoot, {})
+  order = []
+
+  while iterator.hasNext():
+    order = iterator.next()  
+    result = mergeLayouts(topologicalOrders, order, rootOfBCT, sourceAndSinkOfComponents, {})
+    resultsCounter = resultsCounter + 1
+    report result
+
+  for (otherComponentRoot, parentCutpoint) in componentRoots:
+    otherRootOfBCT = treeNodeOfComponent[otherComponentRoot]
+    otherOrderOfComponents: BFS sul BCT radicato su otherRootOfBCT
+    otherRestrictingComponentOfCutpoint = {}
+    getRestrictions(componentsOfNode, cutpointsOfComponent, sourceAndSinkOfComponents, treeNodeOfComponent, otherOrderOfComponents, otherRestrictingComponentOfCutpoint)
+
+    if not parentCutpoint in otherRestrictingComponentOfCutpoint:
+      iterator = BCTPermutationIterator(otherRootOfBCT, otherComponentRoot, otherRestrictingComponentOfCutpoint)
+      
+      order = []
+      while iterator.hasNext():
+        order = iterator.next()
+        result = mergeLayouts(topologicalOrders, order, otherRootOfBCT, sourceAndSinkOfComponents, otherRestrictingComponentOfCutpoint)
+        resultsCounter = resultsCounter + 1
+        report result
