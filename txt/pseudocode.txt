@@ -1,4 +1,4 @@
-find1StackLayout(Graph G):
+enumerate1StackLayout(Graph G):
   // FASE 1
 
   if not isOuterPlanar(G): return
@@ -38,12 +38,23 @@ find1StackLayout(Graph G):
     rootBCT(otherRootOfBCT, sourceAndSinkOfComponents)
 
   resultsCounter = 0
-  iterator(rootOfBCT, componentRoot, {})
+  iterator(rootOfBCT, componentRoot, {}) 		(enumerator)
   order
 
   while iterator.hasNext():
     order = iterator.next()  
     result = mergeLayouts(topologicalOrders, order, rootOfBCT, sourceAndSinkOfComponents, {})
+    print result
+
+
+
+
+due lemmi:
+	se ammette un 1-page layout allora l'algoritmo lo genera
+	se l'algoritmo genera un layout quello è un 1-page layout
+lemma a valle:
+	tra un layout e l'altro intercorre solo tempo lineare
+	
 
 
 

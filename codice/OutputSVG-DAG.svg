@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events" version="1.1" baseProfile="full" viewBox="13 13 121 119">
+	<g>
+		<g>
+			<polygon points="117.5 78.0909 113.974 76.5065 115.135 75.0337 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M92,58 L117.5,78.0909" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="107.042 29.5 106.12 33.254 104.462 32.3789 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M92,58 L107.042,29.5" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="110.5 121.846 106.651 122.203 106.936 120.349 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M79,117 L110.5,121.846" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="119.346 115.5 119.086 111.643 120.931 111.975 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M125,84 L119.346,115.5" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="29.5 100.706 32.023 97.7774 33.1043 99.3092 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M56,82 L29.5,100.706" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="84.5 63 81.8998 65.8602 80.8598 64.3001 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M56,82 L84.5,63" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="74.0714 109.5 71.2285 106.881 72.7955 105.851 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M56,82 L74.0714,109.5" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+		<g>
+			<polygon points="48.5 76.7059 44.8957 75.3092 45.977 73.7774 " stroke="#000000" stroke-width="1.000000px" fill="#000000" />
+			<path fill="none" d=" M22,58 L48.5,76.7059" stroke="#000000" stroke-width="1.000000px" />
+		</g>
+	</g>
+	<g>
+		<ellipse cx="22" cy="106" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="22" y="106" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">0</text>
+	</g>
+	<g>
+		<ellipse cx="92" cy="58" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="92" y="58" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">1</text>
+	</g>
+	<g>
+		<ellipse cx="79" cy="117" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="79" y="117" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">2</text>
+	</g>
+	<g>
+		<ellipse cx="125" cy="84" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="125" y="84" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">3</text>
+	</g>
+	<g>
+		<ellipse cx="111" cy="22" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="111" y="22" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">4</text>
+	</g>
+	<g>
+		<ellipse cx="56" cy="82" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="56" y="82" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">5</text>
+	</g>
+	<g>
+		<ellipse cx="118" cy="123" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="118" y="123" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">6</text>
+	</g>
+	<g>
+		<ellipse cx="22" cy="58" rx="7.5" ry="7.5" fill="#FFDDAA" stroke-width="1.000000px" stroke="#000000" />
+		<text x="22" y="58" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="10" fill="#000000">7</text>
+	</g>
+</svg>

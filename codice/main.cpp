@@ -61,6 +61,10 @@ class TreeNode
 			return children[treeId][childType];
 		}
 
+		bool hasRooting(int treeId) {
+			return !(children.find(treeId) == children.end());
+		}
+
 };
 
 class BCTPermutationIterator {
@@ -289,43 +293,6 @@ private:
     }
 };
 
-void printBCT(TreeNode* treeNode, int treeId) {
-	if (treeNode->children.size() == 0) {
-		return;
-	}
-	if (treeNode->isCutpoint) {
-		std::cout << "figli del cutpoint " << treeNode->value << ":" << std::endl;
-		for (int childType = 0; childType < 3; childType++) {
-			std::cout << "  " << childType << ": " ;
-			for(TreeNode* componentNode: treeNode->getChildren(treeId, childType)) {
-				std::cout << componentNode->value << " ";
-			}
-			std::cout << std::endl;
-		}
-		for (int childrenType = 0; childrenType < 3; childrenType++) {
-			for(TreeNode* componentNode: treeNode->getChildren(treeId, childrenType)) {
-				printBCT(componentNode, treeId);	
-			}
-		}
-	}
-	else {
-		std::cout << "figli della componente " << treeNode->value << ":" << std::endl;
-		for (int childType = 0; childType < 3; childType++) {
-			std::cout << "  " << childType << ": " ;
-			for(TreeNode* cutpointNode: treeNode->getChildren(treeId, childType)) {
-				std::cout << cutpointNode->value << " ";
-			}
-			std::cout << std::endl;	
-		}
-		for (int childType = 0; childType < 3; childType++) {
-			for(TreeNode* cutpointNode: treeNode->getChildren(treeId, childType)) {
-				printBCT(cutpointNode, treeId);
-			}
-		}
-	}
-	return;
-}
-
 int getParentCutpoint(TreeNode* treeNode, int component, int treeId) {
 	if (treeNode->children.size() == 0) {
 		return -1;
@@ -356,40 +323,14 @@ int getParentCutpoint(TreeNode* treeNode, int component, int treeId) {
 	return -1;
 }
 
-/*
-// parentNode è il padre di treeNode nel radicamento che vogliamo osservare
-bool isRestricted(TreeNode* treeNode, TreeNode* parentNode, Array<Array<int, int>, int>* sourceAndSinkOfComponents) {
-	bool result = false;
-	if (treeNode->isCutpoint) {
-		for(TreeNode* componentNode: treeNode->neighbors) {
-			if (componentNode != parentNode) {
-				if ((*sourceAndSinkOfComponents)[componentNode->value][0] != treeNode->value && (*sourceAndSinkOfComponents)[componentNode->value][1] != treeNode->value) {
-					return true;
-				}
-				result = result || isRestricted(componentNode, treeNode, sourceAndSinkOfComponents);
-			}
-		}
-	}
-	else {
-		for(TreeNode* cutpointNode: treeNode->neighbors) {
-			if (cutpointNode != parentNode) {
-				result = result || isRestricted(cutpointNode, treeNode, sourceAndSinkOfComponents);
-			}
-		}
-	}
-	return result;
-}
-*/
-
-void findOtherRoots(TreeNode* treeNode, int parentType, int treeId, std::vector<std::vector<int>>* componentRoots) {
+void findOtherRoots(TreeNode* treeNode, int parentType, int treeId, std::vector<int>* componentRoots) {
 	if (treeNode->isCutpoint) {
 		//std::cout << "-----------" << std::endl;
 		//std::cout << "cutpoint: " << treeNode->value << ", parentType: " << parentType << std::endl;
 		for (int childType = 0; childType < 3; childType++) {
 			for(TreeNode* componentNode: treeNode->getChildren(treeId, childType)) {
 				if (childType == parentType) {
-					std::vector<int> newRoot{{componentNode->value, treeNode->value}};
-					componentRoots->push_back(newRoot);
+					componentRoots->push_back(componentNode->value);
 				}
 			}
 			for(TreeNode* componentNode: treeNode->getChildren(treeId, childType)) {
@@ -400,10 +341,11 @@ void findOtherRoots(TreeNode* treeNode, int parentType, int treeId, std::vector<
 	else {
 		//std::cout << "-----------" << std::endl;
 		//std::cout << "componente: " << treeNode->value << ", parentType: " << parentType << std::endl;
-		for (int childType = 0; childType < 3; childType++) {
-			for(TreeNode* cutpointNode: treeNode->getChildren(treeId, childType)) {
-				findOtherRoots(cutpointNode, childType, treeId, componentRoots);
-			}
+		for(TreeNode* cutpointNode: treeNode->getChildren(treeId, 0)) {
+			findOtherRoots(cutpointNode, 0, treeId, componentRoots);
+		}
+		for(TreeNode* cutpointNode: treeNode->getChildren(treeId, 2)) {
+			findOtherRoots(cutpointNode, 2, treeId, componentRoots);
 		}
 	}
 }
@@ -462,7 +404,6 @@ bool isOuterPlanar(Graph* G)
 	return false;
 }
 
-
 bool hasHamiltonianPath(node source, node sink, int targetSize) {
 	if (source == sink){
 		return targetSize == 1;
@@ -476,17 +417,6 @@ bool hasHamiltonianPath(node source, node sink, int targetSize) {
 	}
 	return result;
 }
-
-/*
-bool ciao(Graph* G, node source, node sink) {
-	planarEmbedPlanarGraph(*G);
-	std::cout << G->representsCombEmbedding() << std::endl;
- 	ConstCombinatorialEmbedding emb(*G);
-	emb.computeFaces();
-	face ext = emb.maximalFace();
-	std::cout << "risultati: " << ext->size() << " " << G->numberOfNodes() << " " << hasHamiltonianPath(G, source, sink, G->numberOfNodes()) << std::endl;
-	return ext->size() == G->numberOfNodes();
-}*/
 
 Array<node, int> getSourceAndSink(Graph* G)
 {
@@ -512,41 +442,6 @@ Array<node, int> getSourceAndSink(Graph* G)
 		}
 	}
 	return sourceAndSink;
-}
-
-bool hasOneSourceAndOneSink(Graph* G)
-{
-	bool hasSource = false;
-	bool hasSink = false;
-	for(node v : G->nodes) {
-		if (v->indeg() == 0) {
-			if (hasSource) {
-				return false;
-			}
-			else {
-				hasSource = true;
-			}
-		}
-		if (v->outdeg() == 0) {
-			if (hasSink) {
-				return false;
-			}
-			else {
-				hasSink = true;
-			}
-		}
-	}
-	return hasSource && hasSink;
-}
-
-void saveGraph(Graph* G, string fileName)
-{
-	GraphIO::write(*G, fileName + ".gml", GraphIO::writeGML);
-}
-
-void readGraph(Graph* G, string fileName)
-{
-	GraphIO::read(*G, fileName + ".gml", GraphIO::readGML);
 }
 
 Array<int, int> mergeLayouts(Array<Array<int, int>, int>* topologicalOrders, std::vector<int>* orderOfComponents, TreeNode* rootOFBCT, Array<Array<node, int>, int>* sourceAndSinkOfComponents, std::unordered_map<int, TreeNode*>* restrictingComponentOfCutpoint) {
@@ -698,7 +593,7 @@ bool getSourceAndSinkOfComponents(Array<Graph, int>* biconnectedComponentsGraphs
 		//draw(&biconnectedComponentsGraphs[i], "Component" + to_string(i) + ".svg" );
 
 		Array<node, int> sourceAndSink = getSourceAndSink(&(*biconnectedComponentsGraphs)[i]);
-		std::cout << "componente " << i << ": sorgente " << sourceAndSink[0] << ", pozzo " << sourceAndSink[1] << std::endl;
+		//std::cout << "componente " << i << ": sorgente " << sourceAndSink[0] << ", pozzo " << sourceAndSink[1] << std::endl;
 
 		if (sourceAndSink[0] != nullptr && sourceAndSink[1] != nullptr) {
 			(*sourceAndSinkOfComponents)[i] = sourceAndSink;
@@ -793,10 +688,11 @@ std::vector<int> rootBCT(TreeNode* rootOfBCT, Array<Array<node, int>, int>* sour
 
 	// ordine delle componenti
 	std::vector<int> orderOfComponents;
-	int i = 0;
 
     visited[rootOfBCT->id] = true;
     queue.push(rootOfBCT);
+
+	bool existsRooting = rootOfBCT->hasRooting(rootOfBCT->value);
 
 	// BST sul BCT non radicato per radicarlo e trovare l'ordine delle componenti (grado di libertà)
     while (!queue.empty()) {
@@ -804,7 +700,6 @@ std::vector<int> rootBCT(TreeNode* rootOfBCT, Array<Array<node, int>, int>* sour
 		queue.pop();
 		if (!u->isCutpoint) {
 			orderOfComponents.push_back(u->value);
-			i++;
 		}
 
         // esplora tutti i nodi adiacenti e salva i figli del nodo (grado di libertà sull'ordine)
@@ -812,30 +707,32 @@ std::vector<int> rootBCT(TreeNode* rootOfBCT, Array<Array<node, int>, int>* sour
             if (!visited[neighbor->id]) {
                 visited[neighbor->id] = true;
                 queue.push(neighbor);
-				int childrenType = -1;
-				if (neighbor->isCutpoint) {
-					if ((*sourceAndSinkOfComponents)[u->value][0]->index() == neighbor->value) {
-						childrenType = 0; // sorgente
-					}
-					else if ((*sourceAndSinkOfComponents)[u->value][1]->index() == neighbor->value) {
-						childrenType = 2; // pozzo
-					}
-					else {
-						childrenType = 1; // intermedio
-					}
-				}
-				else {
-					if ((*sourceAndSinkOfComponents)[neighbor->value][0]->index() == u->value) {
-						childrenType = 0;
-					}
-					else if ((*sourceAndSinkOfComponents)[neighbor->value][1]->index() == u->value) {
-						childrenType = 2;
+				if (!existsRooting) {
+					int childrenType = -1;
+					if (neighbor->isCutpoint) {
+						if ((*sourceAndSinkOfComponents)[u->value][0]->index() == neighbor->value) {
+							childrenType = 0; // sorgente
+						}
+						else if ((*sourceAndSinkOfComponents)[u->value][1]->index() == neighbor->value) {
+							childrenType = 2; // pozzo
+						}
+						else {
+							childrenType = 1; // intermedio
+						}
 					}
 					else {
-						childrenType = 1;
+						if ((*sourceAndSinkOfComponents)[neighbor->value][0]->index() == u->value) {
+							childrenType = 0;
+						}
+						else if ((*sourceAndSinkOfComponents)[neighbor->value][1]->index() == u->value) {
+							childrenType = 2;
+						}
+						else {
+							childrenType = 1;
+						}
 					}
+					u->addChild(rootOfBCT->id, neighbor, childrenType);
 				}
-				u->addChild(rootOfBCT->id, neighbor, childrenType);
             }
         }
     }
@@ -914,7 +811,7 @@ void printRestrictions(std::vector<int>* cutpoints, std::unordered_map<int, Tree
 	}
 }
 
-void find1StackLayout(Graph* G) {
+void enumerate1StackLayouts(Graph* G) {
 	std::cout << "---- INIZIO FASE 1 ----" << std::endl;
 	std::cout << "il grafo ha " << G->numberOfNodes() << " nodi e " << G->numberOfEdges() << " archi" << std::endl;
 
@@ -998,18 +895,18 @@ void find1StackLayout(Graph* G) {
 
 	std::cout << "cerco nuove radici dal radicamento in " << rootOfBCT->value << std::endl;
 	// contiene una lista di coppie [componente su cui si può radicare, cutpoint causa di tale scelta] se questo cutpoint poi risulta essere ristretto allora l'albero deve essere ignorato
-	std::vector<std::vector<int>> componentRoots;
+	std::vector<int> componentRoots;
 	findOtherRoots(rootOfBCT, -1, componentRoot, &componentRoots);
 
 	std::cout << "POSSIBILI RADICI (oltre alla radice attuale = " << componentRoot << "): ";
-	for (std::vector<int> root: componentRoots) {
-		std::cout << "[" << root[0] << ", " << root[1] << "] ";
+	for (int root: componentRoots) {
+		std::cout << root << ", ";
 	}
 	std::cout << std::endl;
 
 	// radicazione degli alberi sulle possibili radici
 	for (int i = 0; i < componentRoots.size(); i++) {
-		int otherComponentRoot = componentRoots[i][0];
+		int otherComponentRoot = componentRoots[i];
 		TreeNode* otherRootOfBCT = treeNodeOfComponent[otherComponentRoot];
 		rootBCT(otherRootOfBCT, &sourceAndSinkOfComponents);
 	}
@@ -1037,9 +934,7 @@ void find1StackLayout(Graph* G) {
 		resultsCounter++;
 	}
 
-	for (std::vector<int> rooting: componentRoots){
-		int otherComponentRoot = rooting[0];
-		int parentCutpoint = rooting[1];
+	for (int otherComponentRoot: componentRoots){
 		TreeNode* otherRootOfBCT = treeNodeOfComponent[otherComponentRoot];
 
 		std::cout << "################################### BCT RADICATO NELLA COMPONENTE " << otherComponentRoot << std::endl;
@@ -1072,43 +967,28 @@ void find1StackLayout(Graph* G) {
 
 		//std::cout << "il parent cutpoint " << parentCutpoint << " è ristretto dalla componente " << otherRestrictingComponentOfCutpoint[parentCutpoint] << std::endl;
 
-		if (otherRestrictingComponentOfCutpoint.find(parentCutpoint) == otherRestrictingComponentOfCutpoint.end()) {
-			BCTPermutationIterator iterator(otherRootOfBCT, otherComponentRoot, &otherRestrictingComponentOfCutpoint);
+		BCTPermutationIterator iterator(otherRootOfBCT, otherComponentRoot, &otherRestrictingComponentOfCutpoint);
 
-			std::vector<int> order;
-			
-			while (iterator.hasNext()) {
-				order = iterator.next();
+		std::vector<int> order;
+		
+		while (iterator.hasNext()) {
+			order = iterator.next();
 
-				Array<int, int> result = mergeLayouts(&topologicalOrders, &order, otherRootOfBCT, &sourceAndSinkOfComponents, &otherRestrictingComponentOfCutpoint);
+			Array<int, int> result = mergeLayouts(&topologicalOrders, &order, otherRootOfBCT, &sourceAndSinkOfComponents, &otherRestrictingComponentOfCutpoint);
 
-				std::cout << "RISULTATO " << resultsCounter + 1 << ": ";
-				for (int n: result) {
-					std::cout << n << " ";
-				}
-				std::cout << std::endl;
-
-				resultsCounter++;
+			std::cout << "RISULTATO " << resultsCounter + 1 << ": ";
+			for (int n: result) {
+				std::cout << n << " ";
 			}
-		}
-		else {
-			std::cout << "IL RADICAMENTO IN " << otherComponentRoot << " NON RESTITUISCE NUOVI RISULTATI" << std::endl;
-			std::cout << "il parent cutpoint " << parentCutpoint << " è ristretto dalla componente " << otherRestrictingComponentOfCutpoint[parentCutpoint]->value << std::endl;
+			std::cout << std::endl;
+
+			resultsCounter++;
 		}
 	}
 
 	std::cout << "embedding trovati: " << resultsCounter << std::endl;
 	std::cout << "TERMINATO" << std::endl;
 
-}
-
-void test(Graph* G) {
-	//std::cout << G->firstEdge()->graphOf() << "   " << G << std::endl;
-	//std::cout << G->firstEdge()->graphOf()->numberOfEdges() << "   " << G->numberOfEdges() << std::endl;
-	//std::cout << G->firstEdge()->graphOf()->numberOfNodes() << "   " << G->numberOfNodes() << std::endl;
-	//std::cout << G->firstEdge()->graphOf()->firstNode()->index() << "   " << G->firstNode()->index() << std::endl;
-	//std::cout << G->firstEdge()->graphOf()->firstEdge()->target()->index() << "   " << G->firstEdge()->target()->index() << std::endl;
-	//std::cout << std::endl;
 }
 
 void readGraphFromArg(Graph* G, const char* graphString)
@@ -1155,48 +1035,21 @@ int main(int argc, char* argv[])
 {
 	Graph G;
 
-	if (argc > 1) {
-        std::cout << "Input string: " << argv[1] << std::endl;
-		readGraphFromArg(&G, argv[1]);
-		draw(&G, "GraphConf.svg");
-		find1StackLayout(&G);
+	if (argc == 2) {
+        std::cout << "input string: " << argv[1] << std::endl;
+		try {
+			readGraphFromArg(&G, argv[1]);
+			draw(&G, "DAG.svg");
+			enumerate1StackLayouts(&G);
+		}
+		catch (const std::runtime_error& e) {
+			std::cerr << "runtime error: " << e.what() << std::endl;
+		}
     }
 	else {
-		std::cout << "Input string: nessun argomento" << std::endl;
-		std::cout << std::endl;
-
-		Graph GNotOuterplanar;
-		Graph GWithMoreSourcesAndSinks;
-		
-		string graphName1 = "Graph";
-		string graphName2 = "GraphNotOuterplanar";
-		string graphName3 = "GraphWithMoreSourcesAndSinks";
-
-		readGraph(&G, graphName1);
-		readGraph(&GNotOuterplanar, graphName2);
-		readGraph(&GWithMoreSourcesAndSinks, graphName3);
-
-		//draw(&G, graphName1 + ".svg");
-		//draw(&GNotOuterplanar, graphName2 + ".svg");
-		//draw(&GWithMoreSourcesAndSinks, graphName3 + ".svg");
-
-		std::cout << "### esecuzione con grafo: " << graphName1 << " ###" << std::endl;
-		find1StackLayout(&G);
-		std::cout << std::endl;
-
-		/*
-		std::cout << "### esecuzione con grafo: " << graphName2 << " ###" << std::endl;
-		find1StackLayout(&GNotOuterplanar);
-		std::cout << std::endl;
-
-		std::cout << "### esecuzione con grafo: " << graphName3 << " ###" << std::endl;
-		find1StackLayout(&GWithMoreSourcesAndSinks);
-		std::cout << std::endl;
-		*/
+		std::cout << "error with the number of arguments (must be one string)" << std::endl;
+		return 1;
 	}
-
-	draw(&G, "Graph.svg");
-	//saveGraph(&G, "graph")
 
 	return 0;
 }
