@@ -293,6 +293,36 @@ private:
     }
 };
 
+int getParentCutpoint(TreeNode* treeNode, int component, int treeId) {
+	if (treeNode->children.size() == 0) {
+		return -1;
+	}
+	if (treeNode->isCutpoint) {
+		for (int childType = 0; childType < 3; childType++) {
+			for(TreeNode* componentNode: treeNode->getChildren(treeId, childType)) {
+				if (componentNode->value == component) {
+					return treeNode->value;
+				}
+				int result = getParentCutpoint(componentNode, component, treeId);
+				if (result != -1) {
+					return result;
+				}
+			}
+		}
+	}
+	else {
+		for (int childType = 0; childType < 3; childType++) {
+			for(TreeNode* cutpointNode: treeNode->getChildren(treeId, childType)) {
+				int result = getParentCutpoint(cutpointNode, component, treeId);
+				if (result != -1) {
+					return result;
+				}
+			}
+		}
+	}
+	return -1;
+}
+
 void test(Graph* G) {
 	//std::cout << G->firstEdge()->graphOf() << "   " << G << std::endl;
 	//std::cout << G->firstEdge()->graphOf()->numberOfEdges() << "   " << G->numberOfEdges() << std::endl;
