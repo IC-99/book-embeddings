@@ -62,9 +62,9 @@ def n_embeddings(stdout: str, graph_size: int):
     embeddings = []
     embedding = []
     for i in range(len(words)):
-        if "\nRISULTATO" in words[i]:
+        if "\nRESULT" in words[i]:
             embedding = []
-            read = -1
+            read = 0
         if read > 0:
             embedding.append(int(words[i]))
             if read == graph_size:
@@ -110,8 +110,8 @@ def graph_to_string(graph, nodes):
 def equals_embeddings(embs1, embs2):
     if len(embs1) != len(embs2):
         return False
-    for emb1 in embs1:
-        if not emb1 in embs2:
+    for emb2 in embs2:
+        if not emb2 in embs1:
             return False
     return True
 

@@ -1,3 +1,5 @@
+let layouts = [];
+
 function fileToString() {
     return new Promise((resolve, reject) => {
         const fileInput = document.getElementById('fileInput');
@@ -27,7 +29,7 @@ function fileToString() {
 }
 
 function getGraphFromFileString(fileString) {
-	G = {
+	var G = {
         nodes: [],
         edges: []
     };
@@ -65,26 +67,24 @@ function getGraphFromFileString(fileString) {
 			G.edges.push({from: sourceNode, to: current});
 		}
 	}
-    //console.log(G);
+    console.log(G);
     return G;
 }
 
-function getOrderAndDraw(graph) {
-    // Intercetta i messaggi di log per ottenere l'ordine calcolato
-    const originalConsoleLog = console.log;
-    let order = [];
+function getDataFromWasm(message) {
+    console.log(message);
+    if (typeof message === 'string' && message.startsWith('RESULT: ')) {
+        console.log("-----INTERCETTATO-----")
+        let layout = message.replace('RESULT: ', '').split(' ').map(item => item.trim());
+        layout.pop(); // rimuove l'elemento vuoto dovuto allo ' ' finale
+        //layouts.push(order);
+        console.log(layout);
+    }
+    return;
+}
 
-    console.log = function(message) {
-        originalConsoleLog.apply(console, arguments);
-        // Cerca il messaggio che contiene l'ordine (adatta questa parte alla tua specifica formattazione)
-        if (typeof message === 'string' && message.startsWith('RISULTATO: ')) {
-            order = message.replace('RISULTATO: ', '').split(' ').map(item => item.trim());
-            console.log = originalConsoleLog; // Ripristina console.log
-            // Genera il grafo con l'ordine estratto
-            order.pop(); // rimuove l'elemento vuoto dovuto allo ' ' finale
-            generateGraph(graph, order);
-        }
-    };
+function getOrderAndDraw(graph) {
+    return;
 }
 
 // Aggiungi l'event listener solo dopo che il documento è stato caricato completamente

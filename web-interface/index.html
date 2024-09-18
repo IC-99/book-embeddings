@@ -22,12 +22,12 @@
         <!-- Sezione dei bottoni a sinistra -->
         <div id="buttons">
             <input type="file" id="fileInput" value="Send">
-            <button>Show biconnected components</button>
-            <button id="processButton">Show layout</button>
+            <button id="run">Compute 1-stack layouts</button>
+            <button id="next">Next layout</button>
+            <!--<button>Show biconnected components</button>-->
             <input type="button" value="Download image" onclick="document.getElementById('canvasImg').click();">
             <a id="canvasImg" download="book-embedding"></a>
-            <ul id="sortable"></ul>
-            <button id="run">Run webassembly</button>
+            <p id="index"></p>
         </div>
 
         <!-- Network a destra -->
@@ -35,7 +35,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vis-network@7.0.1/dist/vis-network.min.js"></script>
-    <script src="/assets/js/getGraph.js"></script>
+    <!--<script src="/assets/js/getGraph.js"></script>-->
     <script src="/assets/js/binary.wasm" type="application/wasm"></script>
     <script src="/assets/js/binary.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>

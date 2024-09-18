@@ -1,5 +1,5 @@
 code_to_replace1 = ",put_char:function(tty,val){if(val===null||val===10){out"
-correct_code1 = ",put_char:function(tty,val){if(val===null||val===10){console.log"
+correct_code1 = ",put_char:function(tty,val){if(val===null||val===10){getDataFromWasm"
 
 code_to_replace2 = "var shouldRunNow=true"
 correct_code2 = "var shouldRunNow=false"
