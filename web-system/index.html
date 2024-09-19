@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book embeddings</title>
+    <link href="https://cdn.jsdelivr.net/npm/vis-network@7.0.1/dist/vis-network.min.css" rel="stylesheet" type="text/css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.jpg">
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <!-- Barra di navigazione -->
+    <nav>
+        <h1>Book embeddings</h1>
+        <ul>
+            <li><a href="#">Thesis</a></li>
+            <li><a href="https://ivancarlini.bitbucket.io/">Personal Page</a></li>
+        </ul>
+    </nav>
+
+    <div id="container">
+        <!-- Sezione dei bottoni a sinistra -->
+        <div id="buttons">
+            <input type="file" id="fileInput" value="Send">
+            <button id="run">Compute 1-stack layouts</button>
+            <button id="next">Next layout</button>
+            <button id="downloadGraph">Download graph file</button>
+            <!--<button>Show biconnected components</button>-->
+            <input type="button" value="Download image" onclick="document.getElementById('canvasImg').click();">
+            <a id="canvasImg" download="book-embedding"></a>
+            <p id="index"></p>
+        </div>
+
+        <!-- Network a destra -->
+        <div id="network"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vis-network@7.0.1/dist/vis-network.min.js"></script>
+    <!--<script src="/assets/js/getGraph.js"></script>-->
+    <script src="/assets/js/binary.wasm" type="application/wasm"></script>
+    <script src="/assets/js/binary.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+</body>
+</html>
