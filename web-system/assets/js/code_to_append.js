@@ -66,6 +66,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('downloadGraph').addEventListener('click', function() {
+
+        graphString = getGraphString();
+
+        // Crea un blob con il contenuto della stringa
+        const blob = new Blob([graphString], { type: 'text/plain' });
+        // Crea un URL per il blob
+        const url = URL.createObjectURL(blob);
+
+        // Crea un elemento <a> temporaneo per il download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'graph';  // Nome del file che verrà scaricato
+        document.body.appendChild(a);
+        a.click();
+
+        // Rimuovi l'elemento <a> e revoca l'URL
+        document.body.removeChild(a);
+            URL.revokeObjectURL(url); 
+    });
+});
+
+function getGraphString() {
+    graphString = "";
+    
+    graph.nodes.forEach((node) => graphString += node.id + "\n");
+    graph.edges.forEach((edge) => graphString += edge.from + "," + edge.to + "\n");
+    console.log(graphString);
+    return graphString;
+}
+
 function fileToString() {
     return new Promise((resolve, reject) => {
         const fileInput = document.getElementById('fileInput');
@@ -146,21 +178,6 @@ function getDataFromWasm(message) {
         layouts.push(layout);
     }
     return;
-}
-
-// Funzione per inizializzare il drag and drop
-function initDragAndDrop(graph) {
-    // Ottieni la lista ordinabile
-    const sortableList = document.getElementById('sortable');
-
-    // Inizializza il drag and drop
-    new Sortable(sortableList, {
-        animation: 150, // Durata dell'animazione
-        onEnd: function (evt) {
-            // Quando il drag and drop è completato, generiamo il grafo
-            //generateGraph(graph); // Rimuoviamo questa linea poiché ora aspettiamo l'ordine dai log
-        }
-    });
 }
 
 // Funzione per generare il grafo utilizzando l'ordinamento corrente degli elementi nella lista
