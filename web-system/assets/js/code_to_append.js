@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('run').addEventListener('click', function() {
         fileToString()
             .then(fileString => {
-                // Qui puoi fare qualcosa con la stringa JSON
                 //console.log('File letto:', fileString);
                 graph = getGraphFromFileString(fileString);
                 layouts = [];
@@ -53,8 +52,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 
             })
             .catch(error => {
-                // Gestisci gli errori qui
                 console.error('Errore durante la lettura del file:', error);
+            });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('runnext').addEventListener('click', function() {
+        fileToString()
+            .then(fileString => {
+                // Qui puoi fare qualcosa con la stringa JSON
+                //console.log('File letto:', fileString);
+
+                var entryFunction = Module["_getNextLayout"];
+                entryFunction();
+
+                generateGraph(graph, layouts[currentIndex]);
+
+                console.log(graph);
+                console.log(layouts);
+                
+            })
+            .catch(error => {
+                console.error('Errore durante il calcolo del layout successivo:', error);
             });
     });
 });
