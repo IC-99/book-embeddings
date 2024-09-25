@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enumeration of 1-Page Book embeddings</title>
+    <title>Enumeration of 1-page book embeddings</title>
     <link href="https://cdn.jsdelivr.net/npm/vis-network@7.0.1/dist/vis-network.min.css" rel="stylesheet" type="text/css">
     <link rel="icon" type="image/x-icon" href="/images/favicon.jpg">
     <link rel="stylesheet" href="/assets/css/styles.css">
@@ -11,7 +11,7 @@
 <body>
     <!-- Barra di navigazione -->
     <nav>
-        <h1>Enumeration of 1-Page Book embeddings</h1>
+        <h1>Enumeration of 1-page book embeddings</h1>
         <ul>
             <li><a href="#">Thesis</a></li>
             <li><a href="https://ivancarlini.bitbucket.io/">Personal Page</a></li>
@@ -23,10 +23,10 @@
         <div id="buttons">
             <label for="fileInput" class="custom-file-upload">Upload a graph file</label>
             <input type="file" id="fileInput" style="display: none;">
-            <p id="fileName"></p>
+            <p id="fileName">No file selected</p>
             <button id="run" class="btn">Compute 1-stack layouts</button>
-            <button id="runnext" class="btn">Compute next layouts</button>
-            <button id="next" class="btn">Next layout</button>
+            <button id="next" class="btn">Next layouts</button>
+            <button id="prev" class="btn">Previous layout</button>
             <button id="downloadGraph" class="btn">Download graph file</button>
             <!--<button>Show biconnected components</button>-->
             <input type="button" value="Download image" onclick="document.getElementById('canvasImg').click();">

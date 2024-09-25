@@ -4,6 +4,7 @@ var graph = {
 };
 var layouts = [["0","8","1","10","4","5","7","9","6","3","2"],["0","8","1","4","5","7","9","6","3","10","2"],["0","8","1","10","4","7","9","6","5","3","2"],["0","8","1","4","7","9","6","5","3","10","2"],["0","8","1","10","5","4","7","9","6","3","2"],["0","8","1","5","4","7","9","6","3","10","2"],["0","8","1","10","5","7","9","6","4","3","2"],["0","8","1","5","7","9","6","4","3","10","2"],["0","8","1","10","7","9","6","4","5","3","2"],["0","8","1","7","9","6","4","5","3","10","2"],["0","8","1","10","7","9","6","5","4","3","2"],["0","8","1","7","9","6","5","4","3","10","2"],["0","1","10","4","5","7","9","6","3","2","8"],["0","1","4","5","7","9","6","3","10","2","8"],["0","1","10","4","7","9","6","5","3","2","8"],["0","1","4","7","9","6","5","3","10","2","8"],["0","1","10","5","4","7","9","6","3","2","8"],["0","1","5","4","7","9","6","3","10","2","8"],["0","1","10","5","7","9","6","4","3","2","8"],["0","1","5","7","9","6","4","3","10","2","8"],["0","1","10","7","9","6","4","5","3","2","8"],["0","1","7","9","6","4","5","3","10","2","8"],["0","1","10","7","9","6","5","4","3","2","8"],["0","1","7","9","6","5","4","3","10","2","8"]];
 var currentIndex = 0;
+var numberOfLayouts = 24;
 
 generateGraph(graph, layouts[currentIndex]);
 
@@ -58,31 +59,33 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('runnext').addEventListener('click', function() {
+    document.getElementById('next').addEventListener('click', function() {
         fileToString()
             .then(fileString => {
-                // Qui puoi fare qualcosa con la stringa JSON
-                //console.log('File letto:', fileString);
-
-                var entryFunction = Module["_getNextLayout"];
-                entryFunction();
-
-                generateGraph(graph, layouts[currentIndex]);
-
-                console.log(graph);
-                console.log(layouts);
-                
+                if (currentIndex == layouts.length - 1) {
+                    var computeNextLayout = Module["_printNextLayout"];
+                    computeNextLayout();
+                }
+                if (currentIndex < numberOfLayouts - 1) {
+                    currentIndex++;
+                    generateGraph(graph, layouts[currentIndex]); 
+                }                              
             })
             .catch(error => {
-                console.error('Errore durante il calcolo del layout successivo:', error);
+                if (currentIndex < numberOfLayouts - 1) {
+                    currentIndex++;
+                    generateGraph(graph, layouts[currentIndex]); 
+                }   
             });
     });
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('next').addEventListener('click', function() {
-        currentIndex = (currentIndex + 1) % layouts.length;
-        generateGraph(graph, layouts[currentIndex]);  
+    document.getElementById('prev').addEventListener('click', function() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            generateGraph(graph, layouts[currentIndex]);
+        }
     });
 });
 
@@ -202,12 +205,16 @@ function getDataFromWasm(message) {
         layout.pop(); // rimuove l'elemento vuoto dovuto allo ' ' finale
         layouts.push(layout);
     }
+    if (typeof message === 'string' && message.startsWith('NUMBER OF LAYOUTS: ')) {
+        console.log("-----INTERCETTATO-----")
+        numberOfLayouts = parseInt(message.replace('NUMBER OF LAYOUTS: ', '').split(' ').map(item => item.trim())[0]);
+    }
     return;
 }
 
 // Funzione per generare il grafo utilizzando l'ordinamento corrente degli elementi nella lista
 function generateGraph(graph, layout) {
-    document.getElementById("index").innerText = "layout " + (currentIndex + 1) + " of " + layouts.length;
+    document.getElementById("index").innerText = "layout " + (currentIndex + 1) + " of " + numberOfLayouts;
 
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
