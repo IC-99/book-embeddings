@@ -8,6 +8,7 @@ var layouts = [["0","8","1","10","4","5","7","9","6","3","2"],["0","8","1","4","
 var currentIndex = 0;
 var numberOfLayouts = 24;
 
+updateStatistics();
 generateGraph(graph, layouts[currentIndex]);
 
 function fileToString() {
@@ -48,11 +49,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 layouts = [];
                 currentIndex = 0;
                 callMain([fileString]);
-                generateGraph(graph, layouts[currentIndex]);
-
-                console.log(graph);
-                console.log(layouts);
-                
+                if (numberOfLayouts == 0) {
+                    currentIndex = -1;
+                    updateStatistics();
+                    generateGraph({nodes: [], edges: []}, []);
+                }
+                else {
+                    updateStatistics();
+                    generateGraph(graph, layouts[currentIndex]); 
+                }               
             })
             .catch(error => {
                 console.error('Errore durante la lettura del file:', error);
@@ -70,12 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (currentIndex < numberOfLayouts - 1) {
                     currentIndex++;
+                    updateStatistics();
                     generateGraph(graph, layouts[currentIndex]); 
                 }                              
             })
             .catch(error => {
                 if (currentIndex < numberOfLayouts - 1) {
                     currentIndex++;
+                    updateStatistics();
                     generateGraph(graph, layouts[currentIndex]); 
                 }   
             });
@@ -86,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('prev').addEventListener('click', function() {
         if (currentIndex > 0) {
             currentIndex--;
+            updateStatistics();
             generateGraph(graph, layouts[currentIndex]);
         }
     });
@@ -210,14 +218,17 @@ function getDataFromWasm(message) {
     if (typeof message === 'string' && message.startsWith('NUMBER OF LAYOUTS: ')) {
         console.log("-----INTERCETTATO-----")
         numberOfLayouts = parseInt(message.replace('NUMBER OF LAYOUTS: ', '').split(' ').map(item => item.trim())[0]);
+        updateStatistics();
     }
     return;
 }
 
+function updateStatistics() {
+    document.getElementById("index").innerText = "layout " + (currentIndex + 1) + " of " + numberOfLayouts;
+}
+
 // Funzione per generare il grafo utilizzando l'ordinamento corrente degli elementi nella lista
 function generateGraph(graph, layout) {
-    document.getElementById("index").innerText = "layout " + (currentIndex + 1) + " of " + numberOfLayouts;
-
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
     const mapping = new Map();
