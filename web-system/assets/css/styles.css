@@ -22,10 +22,11 @@ nav ul li {
 nav ul li a {
   color: white;
   text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 nav ul li a:hover {
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.9);
   color: black;
 }
 
@@ -44,55 +45,56 @@ h1, h2 {
   justify-content: center;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 1%;
+  padding: 20px;
+  gap: 20px;
 }
 
 #buttons {
   display: flex;
   flex-direction: column;
   padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
 }
 
-#buttons button {
+#buttons button, #buttons input[type="button"] {
   margin-bottom: 10px;
   padding: 10px;
   font-size: 16px;
+  background-color: #dadada;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-#buttons input {
+#buttons input[type="file"] {
   margin-bottom: 10px;
   padding: 10px;
   font-size: 16px;
+  cursor: pointer;
 }
 
+#buttons button:hover, #buttons input[type="button"]:hover {
+  background-color: white;
+  color: black;
+  cursor: pointer;
+  transform: scale(1.02);
+}
 
 #buttons button:hover {
   cursor: pointer;
+}
+
+#buttons p {
+  color: #333;
 }
 
 #network {
   width: 1000px; /* Larghezza del 100% del contenitore genitore */
   height: 800px; /* Altezza fissa per il contenitore del grafo */
   border: 3px solid black;
+  border-radius: 10px;
   margin-right: 10%;
-}
-
-#sortable {
-  text-align: center;
-  list-style-type: none;
-  margin: auto;
-  padding: 8px;
-  display: flex; /* Disposizione orizzontale */
-  flex-direction: row; /* Direzione orizzontale */
-  justify-content: center; /* Centra gli elementi lungo l'asse principale (orizzontalmente) */
-  align-items: center; /* Centra gli elementi lungo l'asse trasversale (verticalmente) */
-}
-
-/* Stile per ogni elemento della lista */
-#sortable li {
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
-  padding: 8px;
-  margin-right: 4px;
-  cursor: move;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

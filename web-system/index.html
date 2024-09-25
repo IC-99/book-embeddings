@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book embeddings</title>
+    <title>Enumeration of 1-Page Book embeddings</title>
     <link href="https://cdn.jsdelivr.net/npm/vis-network@7.0.1/dist/vis-network.min.css" rel="stylesheet" type="text/css">
     <link rel="icon" type="image/x-icon" href="/images/favicon.jpg">
     <link rel="stylesheet" href="/assets/css/styles.css">
@@ -11,7 +11,7 @@
 <body>
     <!-- Barra di navigazione -->
     <nav>
-        <h1>Book embeddings</h1>
+        <h1>Enumeration of 1-Page Book embeddings</h1>
         <ul>
             <li><a href="#">Thesis</a></li>
             <li><a href="https://ivancarlini.bitbucket.io/">Personal Page</a></li>
@@ -22,9 +22,9 @@
         <!-- Sezione dei bottoni a sinistra -->
         <div id="buttons">
             <input type="file" id="fileInput" value="Send">
-            <button id="run">Compute 1-stack layouts</button>
-            <button id="next">Next layout</button>
-            <button id="downloadGraph">Download graph file</button>
+            <button id="run" class="btn">Compute 1-stack layouts</button>
+            <button id="next" class="btn">Next layout</button>
+            <button id="downloadGraph" class="btn">Download graph file</button>
             <!--<button>Show biconnected components</button>-->
             <input type="button" value="Download image" onclick="document.getElementById('canvasImg').click();">
             <a id="canvasImg" download="book-embedding"></a>
