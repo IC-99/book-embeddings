@@ -21,7 +21,9 @@
     <div id="container">
         <!-- Sezione dei bottoni a sinistra -->
         <div id="buttons">
-            <input type="file" id="fileInput" value="Send">
+            <label for="fileInput" class="custom-file-upload">Upload a graph file</label>
+            <input type="file" id="fileInput" style="display: none;">
+            <p id="fileName"></p>
             <button id="run" class="btn">Compute 1-stack layouts</button>
             <button id="next" class="btn">Next layout</button>
             <button id="downloadGraph" class="btn">Download graph file</button>

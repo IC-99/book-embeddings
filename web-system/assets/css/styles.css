@@ -57,25 +57,20 @@ h1, h2 {
   border-radius: 10px;
 }
 
-#buttons button, #buttons input[type="button"] {
+#buttons button, #buttons input[type="button"], .custom-file-upload {
   margin-bottom: 10px;
   padding: 10px;
   font-size: 16px;
   background-color: #dadada;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
   color: black;
   border: none;
   border-radius: 8px;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-#buttons input[type="file"] {
-  margin-bottom: 10px;
-  padding: 10px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-#buttons button:hover, #buttons input[type="button"]:hover {
+#buttons button:hover, #buttons input[type="button"]:hover, .custom-file-upload:hover {
   background-color: white;
   color: black;
   cursor: pointer;
