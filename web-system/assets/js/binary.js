@@ -125,6 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('fileInput').addEventListener('change', function() {
     var fileName = this.files[0].name;
     document.getElementById('fileName').textContent = 'Selected file: ' + fileName;
+    var runButton = document.getElementById("run");
+    runButton.style.display = "block";
 });
 
 function getGraphString() {
@@ -278,14 +280,16 @@ function generateGraph(graph, layout) {
     const data = { nodes: nodes, edges: edges };
     const network = new vis.Network(container, data, options);
     const containerWidth = container.offsetWidth;
-    const containerHeight = container.offsetHeight;
+    const containerHeight = container.offsetHeight * 1.2;
 
     // Aggiorna le dimensioni del grafo
     network.setSize(containerWidth, containerHeight);
+    
+    network.moveTo({ position: { x: 0, y: 0 }, scale: 0.9 });
 
     network.on("dragEnd", function(params) {
         // Muovi il grafo al centro
-        network.moveTo({ position: { x: 0, y: 0 }, scale: 0.8 });
+        network.moveTo({ position: { x: 0, y: 0 }, scale: 0.9 });
     });
 
     network.on("afterDrawing", function(ctx) {
