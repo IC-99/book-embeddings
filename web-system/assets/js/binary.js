@@ -280,16 +280,14 @@ function generateGraph(graph, layout) {
     const data = { nodes: nodes, edges: edges };
     const network = new vis.Network(container, data, options);
     const containerWidth = container.offsetWidth;
-    const containerHeight = container.offsetHeight * 1.2;
+    const containerHeight = container.offsetHeight;
 
     // Aggiorna le dimensioni del grafo
     network.setSize(containerWidth, containerHeight);
-    
-    network.moveTo({ position: { x: 0, y: 0 }, scale: 0.9 });
 
     network.on("dragEnd", function(params) {
-        // Muovi il grafo al centro
-        network.moveTo({ position: { x: 0, y: 0 }, scale: 0.9 });
+        network.fit();
+        //network.moveTo({ position: { x: 0, y: -100 }, scale: 0.9 });
     });
 
     network.on("afterDrawing", function(ctx) {

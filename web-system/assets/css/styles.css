@@ -44,24 +44,41 @@ h1, h2 {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  justify-content: space-between;
-  padding: 20px;
-  gap: 20px;
+  padding: 30px;
+}
+
+#network-container {
+  margin-inline: 20px;
 }
 
 #buttons {
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-between;
   padding: 20px;
   background-color: #f0f0f0;
   border-radius: 10px;
+  height: 600px;
+}
+
+#buttons-up {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+#buttons-down {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
 }
 
 #run {
   display: none;
 }
 
-#buttons button, #buttons input[type="button"], .custom-file-upload {
+.btn-left {
   border: 1px solid black;
   margin-bottom: 10px;
   padding: 10px;
@@ -74,26 +91,40 @@ h1, h2 {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-#buttons button:hover, #buttons input[type="button"]:hover, .custom-file-upload:hover {
+.btn-left:hover{
   background-color: white;
-  color: black;
   cursor: pointer;
   transform: scale(1.02);
 }
 
-#buttons button:hover {
-  cursor: pointer;
-}
-
-#buttons p {
-  color: #333;
-}
-
 #network {
-  width: 1000px; /* Larghezza del 100% del contenitore genitore */
-  height: 600px; /* Altezza fissa per il contenitore del grafo */
+  width: 1000px;
+  height: 600px;
   border: 1px solid black;
   border-radius: 50px;
   margin-right: 10%;
-  /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
+}
+
+#navigationBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+.arrow {
+  cursor: pointer;
+  margin-inline: 20px;
+  font-size: 16px;
+  border: none;
+  background-color: white;
+}
+
+.arrow:hover {
+  transform: scale(1.1);
+}
+
+.btn-text {
+  margin-right: 20px;
 }
