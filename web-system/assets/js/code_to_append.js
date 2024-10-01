@@ -123,6 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('fileInput').addEventListener('change', function() {
     var fileName = this.files[0].name;
     document.getElementById('fileName').textContent = 'Selected file: ' + fileName;
+    var runButton = document.getElementById("run");
+    runButton.style.display = "block";
 });
 
 function getGraphString() {
@@ -227,6 +229,7 @@ function updateStatistics() {
 
 // Funzione per generare il grafo utilizzando l'ordinamento corrente degli elementi nella lista
 function generateGraph(graph, layout) {
+
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
     const mapping = new Map();
@@ -238,7 +241,7 @@ function generateGraph(graph, layout) {
     });
 
     graph.nodes.forEach(node => {
-        nodes.add({ id: mapping.get(node.id), label: node.label, level: 0 });
+        nodes.add({ id: mapping.get(node.id), label: node.label, x: mapping.get(node.id) * 75, y: 0 });
     });
 
     graph.edges.forEach(edge => {
@@ -248,15 +251,19 @@ function generateGraph(graph, layout) {
     // Definisci le opzioni del grafo
     const options = {
         nodes: {
-            color: "#76e0f5",
+            color: {
+                background: "#76e0f5",
+                border: "black",
+                highlight: {
+                    background: "#bbffff",
+                    border: "black"
+                }
+            },
             font: {
-                color: "black"
-            }
-        },
-        layout: {
-            hierarchical: {
-                direction: 'UD' // Direzione del layout (da sinistra a destra)
-            }
+                color: "black",
+                size: 16
+            },
+            borderWidth: 1
         },
         edges: {
             color: "black",
@@ -265,9 +272,13 @@ function generateGraph(graph, layout) {
             },
             smooth: {
                 type: 'curvedCW' // Imposta il tipo di curvatura dell'arco
-                //forceDirection: 'horizontal', // Forza la direzione orizzontale
-            },
-            physics: true
+            }
+        },
+        interaction: {
+            dragNodes: false
+        },
+        physics: {
+            enabled: false // Disabilita la fisica per evitare spostamenti automatici
         }
     };
 
@@ -281,13 +292,12 @@ function generateGraph(graph, layout) {
     // Aggiorna le dimensioni del grafo
     network.setSize(containerWidth, containerHeight);
 
-    network.on("dragEnd", function(params) {
-        // Muovi il grafo al centro
-        network.moveTo({ position: { x: 0, y: 0 }, scale: 0.8 });
+    network.on("doubleClick", function(params) {
+        network.fit();
     });
 
     network.on("afterDrawing", function(ctx) {
         var dataURL = ctx.canvas.toDataURL();
         document.getElementById('canvasImg').href = dataURL;
-    })
+    });
 }
