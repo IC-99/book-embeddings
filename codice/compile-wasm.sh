@@ -9,5 +9,5 @@ fi
 # Compila il file sorgente in un file oggetto
 em++ -O3 -I/home/ivan/OGDF/include -I/home/ivan/OGDF/src -o file.o -c "$1" || { echo "Compilazione fallita"; exit 1; }
 
-# Link del file oggetto in un eseguibile
-em++ -O3 -o binary.js -L/home/ivan/OGDFWA/build file.o -lOGDF -lCOIN || { echo "Link fallito"; exit 1; }
+# Link del file oggetto in un eseguibile e esporta le funzioni
+em++ -O3 -o binary.js -L/home/ivan/OGDFWA/build file.o -lOGDF -lCOIN -s EXPORTED_FUNCTIONS="['_main', '_printNextLayout']" || { echo "Link fallito"; exit 1; }
