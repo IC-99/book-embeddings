@@ -9,7 +9,7 @@ var currentIndex = 0;
 var numberOfLayouts = 24;
 
 updateStatistics();
-generateGraph(graph, layouts[currentIndex]);
+drawLayout(graph, layouts[currentIndex]);
 
 function fileToString() {
     return new Promise((resolve, reject) => {
@@ -24,8 +24,8 @@ function fileToString() {
 
         reader.onload = function() {
             try {
-                const fileString = reader.result; // Contenuto del file come stringa
-                resolve(fileString); // Risolve la Promise con la stringa JSON
+                const fileString = reader.result; // file content as a string
+                resolve(fileString);
             } catch (error) {
                 reject('Error reading file: ' + error);
             }
@@ -39,12 +39,10 @@ function fileToString() {
     });
 }
 
-// Aggiungi l'event listener solo dopo che il documento è stato caricato completamente
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('run').addEventListener('click', function() {
         fileToString()
             .then(fileString => {
-                //console.log('File letto:', fileString);
                 graph = getGraphFromFileString(fileString);
                 layouts = [];
                 currentIndex = 0;
@@ -52,11 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (numberOfLayouts == 0) {
                     currentIndex = -1;
                     updateStatistics();
-                    generateGraph({nodes: [], edges: []}, []);
+                    drawLayout({nodes: [], edges: []}, []);
                 }
                 else {
                     updateStatistics();
-                    generateGraph(graph, layouts[currentIndex]); 
+                    drawLayout(graph, layouts[currentIndex]); 
                 }               
             })
             .catch(error => {
@@ -76,14 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (currentIndex < numberOfLayouts - 1) {
                     currentIndex++;
                     updateStatistics();
-                    generateGraph(graph, layouts[currentIndex]); 
+                    drawLayout(graph, layouts[currentIndex]); 
                 }                              
             })
             .catch(error => {
                 if (currentIndex < numberOfLayouts - 1) {
                     currentIndex++;
                     updateStatistics();
-                    generateGraph(graph, layouts[currentIndex]); 
+                    drawLayout(graph, layouts[currentIndex]); 
                 }   
             });
     });
@@ -94,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentIndex > 0) {
             currentIndex--;
             updateStatistics();
-            generateGraph(graph, layouts[currentIndex]);
+            drawLayout(graph, layouts[currentIndex]);
         }
     });
 });
@@ -104,19 +102,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         graphString = getGraphString();
 
-        // Crea un blob con il contenuto della stringa
         const blob = new Blob([graphString], { type: 'text/plain' });
-        // Crea un URL per il blob
         const url = URL.createObjectURL(blob);
 
-        // Crea un elemento <a> temporaneo per il download
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'graph';  // Nome del file che verrà scaricato
+        a.download = 'graph';  // name of the file
         document.body.appendChild(a);
         a.click();
 
-        // Rimuovi l'elemento <a> e revoca l'URL
         document.body.removeChild(a);
             URL.revokeObjectURL(url); 
     });
@@ -134,7 +128,6 @@ function getGraphString() {
     
     graph.nodes.forEach((node) => graphString += node.id + "\n");
     graph.edges.forEach((edge) => graphString += edge.from + "," + edge.to + "\n");
-    console.log(graphString);
     return graphString;
 }
 
@@ -151,8 +144,8 @@ function fileToString() {
 
         reader.onload = function() {
             try {
-                const fileString = reader.result; // Contenuto del file come stringa
-                resolve(fileString); // Risolve la Promise con la stringa JSON
+                const fileString = reader.result; // file content as a string
+                resolve(fileString);
             } catch (error) {
                 reject('Error reading file: ' + error);
             }
@@ -205,20 +198,18 @@ function getGraphFromFileString(fileString) {
 			G.edges.push({from: sourceNode, to: current});
 		}
 	}
-    console.log(G);
     return G;
 }
 
 function getDataFromWasm(message) {
     console.log(message);
+
     if (typeof message === 'string' && message.startsWith('RESULT: ')) {
-        console.log("-----INTERCETTATO-----")
         let layout = message.replace('RESULT: ', '').split(' ').map(item => item.trim());
-        layout.pop(); // rimuove l'elemento vuoto dovuto allo ' ' finale
+        layout.pop(); // remove the last element ' '
         layouts.push(layout);
     }
     if (typeof message === 'string' && message.startsWith('NUMBER OF LAYOUTS: ')) {
-        console.log("-----INTERCETTATO-----")
         numberOfLayouts = parseInt(message.replace('NUMBER OF LAYOUTS: ', '').split(' ').map(item => item.trim())[0]);
         updateStatistics();
     }
@@ -229,8 +220,7 @@ function updateStatistics() {
     document.getElementById("index").innerText = "layout " + (currentIndex + 1) + " of " + numberOfLayouts;
 }
 
-// Funzione per generare il grafo utilizzando l'ordinamento corrente degli elementi nella lista
-function generateGraph(graph, layout) {
+function drawLayout(graph, layout) {
 
     const nodes = new vis.DataSet();
     const edges = new vis.DataSet();
@@ -243,14 +233,13 @@ function generateGraph(graph, layout) {
     });
 
     graph.nodes.forEach(node => {
-        nodes.add({ id: mapping.get(node.id), label: node.label, x: mapping.get(node.id) * 75, y: 0 });
+        nodes.add({ id: mapping.get(node.label), label: node.label, x: mapping.get(node.label) * 75, y: 0 });
     });
 
     graph.edges.forEach(edge => {
         edges.add({ from: mapping.get(edge.from), to: mapping.get(edge.to) });
     });
 
-    // Definisci le opzioni del grafo
     const options = {
         nodes: {
             color: {
@@ -270,28 +259,26 @@ function generateGraph(graph, layout) {
         edges: {
             color: "black",
             arrows: {
-                to: true // Indica che gli archi sono diretti verso il nodo di arrivo
+                to: true
             },
             smooth: {
-                type: 'curvedCW' // Imposta il tipo di curvatura dell'arco
+                type: 'curvedCW'
             }
         },
         interaction: {
             dragNodes: false
         },
         physics: {
-            enabled: false // Disabilita la fisica per evitare spostamenti automatici
+            enabled: false
         }
     };
 
-    // Crea un oggetto Network utilizzando i dati e le opzioni definite sopra
     const container = document.getElementById("network");
     const data = { nodes: nodes, edges: edges };
     const network = new vis.Network(container, data, options);
     const containerWidth = container.offsetWidth;
     const containerHeight = container.offsetHeight;
 
-    // Aggiorna le dimensioni del grafo
     network.setSize(containerWidth, containerHeight);
 
     network.on("doubleClick", function(params) {
