@@ -1,6 +1,0 @@
-checkHamiltonianPaths(biconnectedComponentsGraphs, sourceAndSinkOfComponents):
-  for biconnectedComponentGraph in biconnectedComponentsGraphs:
-    source = sourceAndSinkOfComponents[0]
-    sink = sourceAndSinkOfComponents[1]
-    if non esiste arco (source, sink) oppure non esiste cammino da source a sink di lunghezza biconnectedComponentGraph.size: return false
-    return true      
