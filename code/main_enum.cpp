@@ -237,6 +237,12 @@ class OneStackLayoutsEnumerator {
 
 			std::vector<int> order = enumerator.getNextPermutation();
 
+			std::cout << "ORDINE BLOCCHI: ";
+			for (int block: order) {
+				std::cout << " " << block;
+			}
+			std::cout << std::endl;
+
 			Array<int, int> result = mergeLayouts(&order, treeNodeOfComponent[rootings[currentRooting]]);
 			resultsCounter++;
 
@@ -882,22 +888,6 @@ void readGraphFromArg(Graph* G, const char* graphString)
 	}
 }
 
-OneStackLayoutsEnumerator enumerator;
-
-extern "C" {
-	void printNextLayout() {
-		if (enumerator.hasNext()) {
-			Array<int, int> result = enumerator.getNext();
-
-			std::cout << "RESULT: ";
-			for (int n: result) {
-				std::cout << n << " ";
-			}
-			std::cout << std::endl;
-		}
-	}
-}
-
 int main(int argc, char* argv[])
 {
 	Graph G;
@@ -907,9 +897,17 @@ int main(int argc, char* argv[])
 		try {
 			readGraphFromArg(&G, argv[1]);
 			draw(&G, "DAG.svg");
-			enumerator = OneStackLayoutsEnumerator(&G);
+			OneStackLayoutsEnumerator enumerator = OneStackLayoutsEnumerator(&G);
 			std::cout << "NUMBER OF LAYOUTS: " << enumerator.numberOfLayouts() <<std::endl;
-			printNextLayout();
+			while (enumerator.hasNext()) {
+				Array<int, int> result = enumerator.getNext();
+
+				std::cout << "RESULT: ";
+				for (int n: result) {
+					std::cout << n << " ";
+				}
+				std::cout << std::endl << std::endl;
+			}
 		}
 		catch (const std::runtime_error& e) {
 			std::cerr << "runtime error: " << e.what() << std::endl;
