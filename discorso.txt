@@ -1,0 +1,23 @@
+1: Enumerazione di 1-Page Book Embedding di Grafi Diretti Aciclici
+
+2: l'obiettivo principale della tesi è quello di realizzare un algoritmo per enumerare tutti i possibili 1-page book embedding ammessi da un grafo diretto aciclico, anche detto DAG. Tale algoritmo è stato poi implementato in C++ e compilato in WebAssembly, così da poter realizzare un tool efficiente che consente di utilizzare l'algoritmo su una pagina web. Un altro obiettivo della tesi consiste nel ricavare una formula per contare quanti sono i 1-page book embedding ammessi da un certo DAG.
+
+3: per prima cosa, un DAG è un grafo diretto in cui non esistono cicli diretti, ovvero un grafo in cui non esistono cammini diretti che attraversano più volte uno stesso vertice. un DAG è l'input del nostro algoritmo.
+
+4: per ottenere un book embedding di un DAG è necessario ordinare i vertici lungo una linea, detta spina, per poi assegnare gli archi a diverse pagine con l'obiettivo di non avere incroci tra gli archi su nessuna pagina. inoltre, poiché il DAG è un grafo diretto, è necessario che l'ordinamento dei vertici segua anche la direzione degli archi.
+
+5: un 1-page book embedding di un DAG è un book embedding su una singola pagina e consiste quindi in un ordinamento dei vertici tale per cui non esistono incroci tra gli archi e la direzione degli archi è rispettata.
+
+6: per poter realizzare l'algoritmo di enumerazione è stato necessario studiare un algoritmo descritto da Heat e Pemmaraju più di 20 anni fa. tale algoritmo determina se un DAG ammette un 1-page book embedding ed è suddiviso in due fasi: nella prima fase l'algoritmo verifica che ogni componente biconnessa del grafo ammetta un 1-page book embedding, nella seconda fase l'algoritmo prova a costruire un 1-page book embedding dell'intero DAG
+
+7: la prima fase suddivide quindi il DAG nelle sue componenti biconnesse, per componente biconnessa si intende un sottografo massimale tale che se viene rimosso un suo vertice non aumenta il numero di componenti connesse. i vertici che se rimossi aumentano il numero di componenti connesse del grafo sono chiamati cutpoint e sono evidenziati nel DAG di esempio.
+
+8*: affinché una componente biconnessa ammetta un 1-page book embedding, tale componente deve essere outerplanare, ovvero deve essere possibile disegnarla su un piano senza che esistano incroci tra gli archi e in modo tale che tutti i vertici si trovino su una faccia esterna, detta outer face. inoltre deve esistere un cammino diretto su una outer face che attraversi tutti i vertici della componente biconnessa in un suo embedding outerplanare.
+
+9: la prima fase dell'algoritmo ricava quindi il 1-page book embedding per ogni componente biconnessa del DAG. se invece viene trovata una componente biconnessa che non ammette un 1-page book embedding allora l'algoritmo fallisce.
+
+10: per la seconda fase dell'algoritmo è necessaria una struttura chiamata block-cutpoint tree. tale struttura riassume la struttura del DAG e consiste in un albero i cui nodi corrispondono alle componenti biconnesse e ai cutpoint del DAG, mentre gli archi collegano i cutpoint alle componenti biconnesse a cui questi appartengono.
+
+11: l'algoritmo procede con il radicare l'albero a una componente arbitraria e a verificare la presenza di conflitti. se non vengono trovati conflitti, le componenti biconnesse vengono elaborate seguendo l'ordinamento ottenuto attraverso una BFS sul block-cutpoint tree.
+
+12: l'elaborazione delle componenti consiste nello stabilire come l'embedding della componente deve essere aggiunto all'embedding attuale. una volta elaborate tutte le componenti biconnesse si ottiene un 1-page book embedding dell'intero DAG.
