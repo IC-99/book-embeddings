@@ -2,7 +2,7 @@
 
 2: L'obiettivo principale della tesi è la realizzazione di un algoritmo per enumerare, ovvero elencare, tutti i possibili 1-page book embedding ammessi da un grafo diretto aciclico, anche detto DAG. Tale algoritmo è stato poi implementato in C++ e compilato in WebAssembly così da poter realizzare un tool efficiente che consente di eseguire l'algoritmo su una pagina web. Un altro obiettivo della tesi consiste nel ricavare una formula per contare quanti sono i 1-page book embedding ammessi da un certo DAG.
 
-3: Un DAG è un grafo diretto privo di cicli diretti, dove non è possibile percorrere un cammino che attraversa più volte uno stesso vertice.
+3: Un DAG è un grafo diretto privo di cicli diretti, dove non è quindi possibile percorrere un cammino che attraversa più volte uno stesso vertice.
 
 4: Un book embedding di un DAG consiste in un disegno in cui i vertici del DAG sono ordinati lungo una linea, detta spina, e gli archi sono assegnati a diverse pagine con l'obiettivo di non avere incroci tra di essi. Inoltre, poiché il DAG è un grafo diretto, l'ordinamento dei vertici deve anche rispettare la direzione degli archi.
 
@@ -14,7 +14,7 @@
 
 8: Nella prima fase, l'algoritmo cerca di ricavare il 1-page book embedding di ogni blocco del DAG. Se invece viene trovato un blocco che non ammette un 1-page book embedding allora l'algoritmo fallisce.
 
-9: La seconda fase utilizza un albero chiamato block-cutpoint tree. Questo albero descrive la struttura del DAG ed è composto da nodi associati ai blocchi e ai cutpoint del DAG. Gli archi del block-cutpoint tree collegano i cutpoint ai blocchi a cui questi appartengono. L'albero viene radicato a un blocco arbitrario, e l'algoritmo cerca eventuali conflitti, vedremo più avanti cosa significa.
+9: La seconda fase utilizza un albero chiamato block-cutpoint tree. Questo albero descrive la struttura del DAG ed è composto da nodi associati ai blocchi e ai cutpoint del DAG. Gli archi del block-cutpoint tree collegano i cutpoint ai blocchi a cui questi appartengono. L'albero viene radicato a un blocco arbitrario, e l'algoritmo cerca eventuali conflitti, vedremo più avanti in cosa consiste la ricerca di questi conflitti.
 
 10: Se non vengono trovati conflitti, l’algoritmo elabora i blocchi in base a un ordinamento derivato da una visita in ampiezza del block-cutpoint tree, detto BFS ordering.
 
@@ -22,11 +22,11 @@
 
 19: L'algoritmo di enumerazione proposto nella tesi si basa sull'algoritmo appena descritto. Le prime fasi sono analoghe, dunque l'algoritmo verifica che ogni blocco ammetta un 1-page book embedding, radica il block-cutpoint tree a un blocco arbitrario e verifica che non ci siano conflitti. Successivamente però, l'algoritmo introduce delle modifiche. Per prima cosa viene ricercato un radicamento migliore per il block-cutpoint tree iniziale. Poi vengono individuati gli insiemi di blocchi del DAG che, se scambiati di posizione nel BFS ordering, producono risultati differenti e, una volta individuati questi insiemi di blocchi, vengono generati i diversi BFS ordering e, di conseguenza, costruiti i 1-page book embedding corrispondenti.
 
-20: Prima di descrivere queste fasi, è utile definire le diverse tipologie di vertici nei blocchi. Ogni blocco che ammette un 1-page book embedding contiene un vertice sorgente senza archi in ingresso, un vertice pozzo senza archi in uscita ed eventuali vertici intermedi, con archi sia in ingresso che in uscita.
+20: Prima di descrivere queste fasi, è utile definire le diverse tipologie di vertici nei blocchi. Ogni blocco che ammette un 1-page book embedding contiene un vertice senza archi in ingresso detto sorgente, un vertice senza archi in uscita detto pozzo ed eventuali vertici con archi sia in ingresso che in uscita detti intermedi.
 
 21: L'algoritmo etichetta gli archi del block-cutpoint tree in base al ruolo del cutpoint nel blocco a cui il cutpoint è collegato. 0 se il cutpoint è sorgente del blocco, 1 se intermedio e 2 se pozzo
 
-22: La ricerca di conflitti nel block-cutpoint tree può ora essere descritta poiché questa riguarda la ricerca di cammini tra blocchi in cui il primo e l'ultimo arco sono etichettati con 1. se un tale cammino esiste, allora il DAG non ammette un 1-page book embedding. Durante lo sviluppo della tesi è stata trovata un'imprecisione nell'algoritmo di Heat e Pemmaraju nella procedura che ricerca questi conflitti. La procedura è stata quindi corretta attraverso l'aggiunta di una condizione aggiuntiva.
+22: La ricerca di conflitti nel block-cutpoint tree può ora essere descritta poiché questa riguarda la ricerca di cammini tra blocchi in cui il primo e l'ultimo arco sono etichettati con 1. se un tale cammino esiste, allora il DAG non ammette un 1-page book embedding. Durante lo sviluppo della tesi è stata trovata un'imprecisione nell'algoritmo di Heat e Pemmaraju nella procedura che ricerca questi conflitti. La procedura è stata quindi corretta attraverso l'introduzione di una condizione aggiuntiva.
 
 23: L'algoritmo procede con la ricerca di un radicamento migliore. La proprietà principale di questo radicamento risiede nel fatto che non sono presenti cutpoint che hanno blocchi figli raggiungibili attraverso un arco di tipo 1. Questo radicamento esiste sempre nei block-cutpoint tree in cui non ci sono conflitti e può essere trovato in tempo lineare.
 
