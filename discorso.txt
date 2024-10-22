@@ -1,4 +1,4 @@
-1: Buongiorno a tutti, il mio lavoro è stato svolto sotto la supervisione del professor Giordano Da Lozzo ed è intitolato "enumerazione di 1-Page Book Embedding di Grafi Diretti Aciclici"
+1: Buongiorno a tutti, io sono Ivan Carlini e il mio lavoro è stato svolto sotto la supervisione del professor Giordano Da Lozzo
 
 2: L'obiettivo principale della tesi consiste nella realizzazione di un algoritmo per enumerare, ovvero elencare, tutti i possibili 1-page book embedding ammessi da un grafo diretto aciclico, anche detto DAG, con worst-case delay lineare. Tale algoritmo è stato poi implementato in C++ e compilato in WebAssembly così da poter realizzare un tool efficiente che consente di eseguire l'algoritmo su una pagina web. Un altro obiettivo della tesi consiste nel ricavare una formula per contare quanti sono i 1-page book embedding ammessi da un certo DAG.
 
